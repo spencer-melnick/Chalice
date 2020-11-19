@@ -78,3 +78,6 @@ Content/Collections/*
 Content/Developers/*
 Content/StarterContent/*
 Content/AnimStarterPack/*
+
+# Blender Working Files
+*.blend1
