@@ -4,10 +4,21 @@
 	"Category": "",
 	"Description": "",
 	"Modules": [
+        {
+          "Name": "ChaliceAbilities",
+          "Type": "Runtime",
+          "LoadingPhase": "Default"
+        },
 		{
 			"Name": "ChaliceGame",
 			"Type": "Runtime",
 			"LoadingPhase": "Default"
 		}
-	]
+	],
+    "Plugins": [
+      {
+        "Name": "GameplayAbilities",
+        "Enabled": true
+      }
+    ]
 }
