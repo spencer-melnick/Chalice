@@ -8,10 +8,10 @@ DEFINE_LOG_CATEGORY(LogChaliceAbilities);
 
 void FChaliceAbilitiesModule::StartupModule()
 {
-	UE_LOG(LogChaliceAbilities, Display, TEXT("ChaliceAbilities: Module Started"));
+	UE_LOG(LogChaliceAbilities, Display, TEXT("ChaliceAbilities: Module started"));
 }
 
 void FChaliceAbilitiesModule::ShutdownModule()
 {
-	UE_LOG(LogChaliceAbilities, Display, TEXT("ChaliceAbilities: Module Shutdown"));
+	UE_LOG(LogChaliceAbilities, Display, TEXT("ChaliceAbilities: Module shutdown"));
 }
