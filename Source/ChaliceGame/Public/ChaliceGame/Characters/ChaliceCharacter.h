@@ -17,7 +17,7 @@ class UCameraComponent;
  * Base character for ChaliceGame
  */
 UCLASS()
-class AChaliceCharacter : public ACharacter
+class CHALICEGAME_API AChaliceCharacter : public ACharacter
 {
 	GENERATED_BODY()
 
