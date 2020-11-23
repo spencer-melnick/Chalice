@@ -5,7 +5,7 @@
 	"Description": "",
 	"Modules": [
 		{
-			"Name": "Chalice",
+			"Name": "ChaliceGame",
 			"Type": "Runtime",
 			"LoadingPhase": "Default"
 		}

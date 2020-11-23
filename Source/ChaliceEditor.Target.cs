@@ -1,4 +1,4 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
+// Copyright (c) 2020 Spencer Melnick
 
 using UnrealBuildTool;
 using System.Collections.Generic;
@@ -9,6 +9,6 @@ public class ChaliceEditorTarget : TargetRules
 	{
 		Type = TargetType.Editor;
 		DefaultBuildSettings = BuildSettingsVersion.V2;
-		ExtraModuleNames.AddRange( new string[] { "Chalice" } );
+		ExtraModuleNames.AddRange( new string[] { "ChaliceGame" } );
 	}
 }
