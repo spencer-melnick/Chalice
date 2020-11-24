@@ -2,6 +2,7 @@
 
 #include "ChaliceGame/Characters/ChaliceCharacter.h"
 #include "ChaliceGame.h"
+#include "ChaliceAbilities/ChaliceAbilityComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Components/InputComponent.h"
@@ -20,6 +21,7 @@ AChaliceCharacter::AChaliceCharacter()
 	SpringArmComponent->SetupAttachment(RootComponent);
 	CameraComponent = CreateDefaultSubobject<UCameraComponent>(CameraComponentName);
 	CameraComponent->SetupAttachment(SpringArmComponent);
+	AbilityComponent = CreateDefaultSubobject<UChaliceAbilityComponent>(AbilityComponentName);
 }
 
 
@@ -27,6 +29,7 @@ AChaliceCharacter::AChaliceCharacter()
 
 FName AChaliceCharacter::SpringArmComponentName(TEXT("SpringArmComponent"));
 FName AChaliceCharacter::CameraComponentName(TEXT("CameraComponent"));
+FName AChaliceCharacter::AbilityComponentName(TEXT("AbilitySystemComponent"));
 
 
 // Character overrides
@@ -60,6 +63,13 @@ void AChaliceCharacter::Tick(float DeltaSeconds)
 	Super::Tick(DeltaSeconds);
 }
 
+
+// Ability interfaces
+
+UAbilitySystemComponent* AChaliceCharacter::GetAbilitySystemComponent() const
+{
+	return Cast<UAbilitySystemComponent>(AbilityComponent);
+}
 
 
 // Movement controls
