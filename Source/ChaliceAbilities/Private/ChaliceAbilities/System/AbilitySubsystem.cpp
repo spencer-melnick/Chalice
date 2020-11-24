@@ -7,9 +7,17 @@
 
 // UAbilitySubsystem
 
+// Engine subsystem overrides
+
 void UAbilitySubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
+	UE_LOG(LogChaliceAbilities, Display, TEXT("Initializing ability system global data"))
 	UAbilitySystemGlobals::Get().InitGlobalData();
-
-	UE_LOG(LogChaliceAbilities, Display, TEXT("Initialized ability system global data"))
 }
+
+void UAbilitySubsystem::Deinitialize()
+{
+	UE_LOG(LogChaliceAbilities, Display, TEXT("Saving configuration values"))
+	SaveConfig();
+}
+

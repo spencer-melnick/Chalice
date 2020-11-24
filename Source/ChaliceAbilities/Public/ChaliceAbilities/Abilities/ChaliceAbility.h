@@ -26,4 +26,5 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="ChaliceAbility")
 	bool bBufferInput = false;
+
 };
