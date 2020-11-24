@@ -173,10 +173,12 @@ void UChaliceAbilityComponent::PollBufferedInputs()
 	}
 
 	const float CurrentRealTime = World->GetRealTimeSeconds();
+	bUsingBufferedMovementInput = true;
 
 	while (InputBuffer.Num() > 0)
 	{
 		const FBufferedInput& BufferedInput = InputBuffer[0];
+		BufferedMovementInput = BufferedInput.MovementInput;
 
 		if ((CurrentRealTime - BufferedInput.BufferedTime) >= AbilitySubsystem->InputBufferTime)
 		{
@@ -216,5 +218,28 @@ void UChaliceAbilityComponent::PollBufferedInputs()
 			break;
 		}
 	}
+
+	bUsingBufferedMovementInput = false;
+}
+
+
+// Input controls
+
+FVector UChaliceAbilityComponent::GetLastMovementInput() const
+{
+	if (bUsingBufferedMovementInput)
+	{
+		return BufferedMovementInput;
+	}
+
+	const ACharacter* Character = Cast<ACharacter>(AvatarActor);
+	if (!Character)
+	{
+		UE_LOG(LogChaliceAbilities, Warning, TEXT("%s failed on %s - %s is not a valid character"),
+			ANSI_TO_TCHAR(__FUNCTION__), *GetNameSafe(this), *GetNameSafe(AvatarActor))
+		return FVector::ZeroVector;
+	}
+
+	return Character->GetLastMovementInputVector();
 }
 

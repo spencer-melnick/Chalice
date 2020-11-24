@@ -22,6 +22,17 @@ class CHALICEABILITIES_API UChaliceAbility : public UGameplayAbility
 	
 public:
 
+
+	// Input controls
+
+	/**
+	 * Gets the last movement input from the avatar actor as a character, or the input at the time of input buffering
+	 * if the ability was triggered from buffered input
+	 */
+	UFUNCTION(BlueprintCallable, Category="ChaliceAbility|Input")
+	FVector GetLastMovementInput(const FGameplayAbilityActorInfo& ActorInfo) const;
+	
+
 	// Editor properties
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="ChaliceAbility")

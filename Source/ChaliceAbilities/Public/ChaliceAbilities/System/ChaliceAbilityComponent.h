@@ -24,6 +24,16 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 
+	// Input controls
+
+	/**
+	 * Returns the movement input from the avatar actor as a character, or any buffered input if called from an
+	 * input buffered ability activation
+	 */
+	UFUNCTION(BlueprintCallable, Category="ChaliceAbilityComponent")
+	FVector GetLastMovementInput() const;
+
+
 private:
 
 	// Input buffering
@@ -39,6 +49,7 @@ private:
 		float BufferedTime;
 	};
 	TArray<FBufferedInput> InputBuffer;
+	bool bUsingBufferedMovementInput = false;
 	FVector BufferedMovementInput;
 	
 };
