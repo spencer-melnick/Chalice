@@ -1,6 +1,6 @@
 ﻿// Copyright (c) 2020 Spencer Melnick
 
-#include "ChaliceAbilities/ChaliceAbilityComponent.h"
+#include "ChaliceAbilities/System/ChaliceAbilityComponent.h"
 #include "ChaliceAbilities.h"
 
 

@@ -1,6 +1,6 @@
 ﻿// Copyright (c) 2020 Spencer Melnick
 
-#include "ChaliceAbilities/AbilitySubsystem.h"
+#include "ChaliceAbilities/System/AbilitySubsystem.h"
 #include "ChaliceAbilities.h"
 #include "AbilitySystemGlobals.h"
 

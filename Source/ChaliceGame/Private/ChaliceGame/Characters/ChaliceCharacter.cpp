@@ -1,8 +1,10 @@
 ﻿// Copyright (c) 2020 Spencer Melnick
 
 #include "ChaliceGame/Characters/ChaliceCharacter.h"
+#include "ChaliceGame/Characters/InputBindings.h"
 #include "ChaliceGame.h"
-#include "ChaliceAbilities/ChaliceAbilityComponent.h"
+#include "ChaliceAbilities/System/ChaliceAbilityComponent.h"
+#include "ChaliceAbilities/Abilities/ChaliceAbility.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Components/InputComponent.h"
@@ -38,7 +40,10 @@ void AChaliceCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-	
+	if (HasAuthority())
+	{
+		GrantStartingAbilities();
+	}
 }
 
 void AChaliceCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -47,15 +52,16 @@ void AChaliceCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 
 	check(PlayerInputComponent);
 
-	// Bind jump controls
-	PlayerInputComponent->BindAction(TEXT("Jump"), IE_Pressed, this, &AChaliceCharacter::Jump);
-	PlayerInputComponent->BindAction(TEXT("Jump"), IE_Released, this, &AChaliceCharacter::StopJumping);
-
 	// Bind movement controls
 	PlayerInputComponent->BindAxis(TEXT("MoveForward"), this, &AChaliceCharacter::MoveForward);
 	PlayerInputComponent->BindAxis(TEXT("MoveRight"), this, &AChaliceCharacter::MoveRight);
 	PlayerInputComponent->BindAxis(TEXT("LookUp"), this, &AChaliceCharacter::AddControllerPitchInput);
 	PlayerInputComponent->BindAxis(TEXT("LookRight"), this, &AChaliceCharacter::AddControllerYawInput);
+
+	// Bind ability activation
+	AbilityComponent->BindAbilityActivationToInputComponent(PlayerInputComponent,FGameplayAbilityInputBinds(
+		TEXT("Confirm"), TEXT("Cancel"), TEXT("EAbilityInputID"),
+		static_cast<uint32>(EAbilityInputID::Confirm), static_cast<uint32>(EAbilityInputID::Cancel)));
 }
 
 void AChaliceCharacter::Tick(float DeltaSeconds)
@@ -89,5 +95,36 @@ void AChaliceCharacter::MoveForward(float Scale)
 void AChaliceCharacter::MoveRight(float Scale)
 {
 	AddMovementInputControlSpace(FVector::RightVector, Scale, false);
+}
+
+
+// Ability helper functions
+
+void AChaliceCharacter::GrantStartingAbilities()
+{
+	if (bGrantedStartingAbilities)
+	{
+		UE_LOG(LogChaliceGame, Warning, TEXT("%s failed: %s already granted starting abilities"),
+			ANSI_TO_TCHAR(__FUNCTION__), *GetNameSafe(this))
+		return;
+	}
+
+	if (!HasAuthority())
+	{
+		UE_LOG(LogChaliceGame, Warning, TEXT("%s failed: %s does not have authority to grant abilities"),
+			ANSI_TO_TCHAR(__FUNCTION__), *GetNameSafe(this))
+		return;
+	}
+
+	bGrantedStartingAbilities = true;
+
+	for (const FStartingAbilityInfo& AbilityInfo : StartingAbilities)
+	{
+		AbilityComponent->GiveAbility(FGameplayAbilitySpec(
+			AbilityInfo.AbilityClass, AbilityInfo.AbilityLevel, static_cast<int32>(AbilityInfo.InputBinding)));
+	}
+
+	UE_LOG(LogChaliceGame, Display, TEXT("Granted %s starting abilities"),
+		*GetNameSafe(this))
 }
 
