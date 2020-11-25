@@ -220,6 +220,7 @@ void UChaliceAbilityComponent::PollBufferedInputs()
 		{
 			// If any ability was triggered, pop the input from the buffer
 			PopInput();
+			break;
 		}
 		else
 		{
