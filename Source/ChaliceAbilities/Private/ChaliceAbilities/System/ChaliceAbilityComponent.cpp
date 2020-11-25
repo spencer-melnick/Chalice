@@ -208,12 +208,34 @@ void UChaliceAbilityComponent::PollBufferedInputs()
 				continue;
 			}
 
+			// Simulate input being pressed for ability activation
+			const bool bInputAlreadyPressed = Spec.InputPressed;
+			Spec.InputPressed = true;
+			
 			// Try to activate the ability if it isn't already active
 			if (!Spec.IsActive() && TryActivateAbility(Spec.Handle))
 			{
 				// Track if we activated any ability
 				bAbilityActivated = true;
+
+				if (!bInputAlreadyPressed)
+				{
+					// If the input wasn't pressed before our buffered activation, simulate an input release event
+					Spec.InputPressed = false;
+					if (Spec.Ability && Spec.IsActive())
+					{
+						if (Spec.Ability->bReplicateInputDirectly && IsOwnerActorAuthoritative() == false)
+						{
+							ServerSetInputReleased(Spec.Handle);
+						}
+						AbilitySpecInputReleased(Spec);
+						InvokeReplicatedEvent(EAbilityGenericReplicatedEvent::InputReleased, Spec.Handle, Spec.ActivationInfo.GetActivationPredictionKey());
+					}
+				}
 			}
+
+			// Reset input state
+			Spec.InputPressed = bInputAlreadyPressed;
 		}
 
 		if (bAbilityActivated)
