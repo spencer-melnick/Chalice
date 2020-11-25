@@ -14,6 +14,6 @@ public class ChaliceAbilities : ModuleRules
             "GameplayAbilities", "GameplayTags", "GameplayTasks"
         });
 
-        PrivateDependencyModuleNames.AddRange(new string[] {  });
+        PrivateDependencyModuleNames.AddRange(new string[] { "GameplayDebugger" });
     }
 }
