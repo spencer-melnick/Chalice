@@ -71,6 +71,15 @@ void UChaliceAbilityComponent::AbilityLocalInputPressed(int32 InputID)
 	}
 }
 
+void UChaliceAbilityComponent::BindAbilityActivationToInputComponent(UInputComponent* InputComponent, FGameplayAbilityInputBinds BindInfo)
+{
+	Super::BindAbilityActivationToInputComponent(InputComponent, BindInfo);
+
+	// This might not work if multiple different enums are used for binding
+	InputBindEnum = BindInfo.GetBindEnum();
+}
+
+
 bool UChaliceAbilityComponent::GetShouldTick() const
 {
 	const UAbilitySubsystem* AbilitySubsystem = GEngine->GetEngineSubsystem<UAbilitySubsystem>();
