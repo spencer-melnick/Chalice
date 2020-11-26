@@ -9,6 +9,6 @@ public class ChaliceEditorTarget : TargetRules
 	{
 		Type = TargetType.Editor;
 		DefaultBuildSettings = BuildSettingsVersion.V2;
-		ExtraModuleNames.AddRange( new string[] { "ChaliceAbilities", "ChaliceGame" } );
+		ExtraModuleNames.AddRange( new string[] { "ChaliceCore", "ChaliceAbilities", "ChaliceGame" } );
 	}
 }

@@ -5,6 +5,11 @@
 	"Description": "",
 	"Modules": [
         {
+          "Name": "ChaliceCore",
+          "Type": "Runtime",
+          "LoadingPhase": "Default"
+        },
+        {
           "Name": "ChaliceAbilities",
           "Type": "Runtime",
           "LoadingPhase": "Default"
