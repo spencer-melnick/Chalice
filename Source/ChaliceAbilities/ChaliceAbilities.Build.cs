@@ -11,7 +11,8 @@ public class ChaliceAbilities : ModuleRules
         PublicDependencyModuleNames.AddRange(new string[]
         {
             "Core", "CoreUObject", "Engine", "InputCore",
-            "GameplayAbilities", "GameplayTags", "GameplayTasks"
+            "GameplayAbilities", "GameplayTags", "GameplayTasks",
+            "ChaliceCore"
         });
 
         PrivateDependencyModuleNames.AddRange(new string[] { "GameplayDebugger" });
