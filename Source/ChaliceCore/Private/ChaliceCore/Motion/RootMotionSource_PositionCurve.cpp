@@ -56,7 +56,7 @@ void FRootMotionSource_PositionCurve::PrepareRootMotion(
     RootMotionParams.Clear();
 
     // Check for valid position curve and duration
-    if (!PositionOverTime || Duration > SMALL_NUMBER)
+    if (!PositionOverTime || Duration < SMALL_NUMBER)
     {
     	UE_LOG(LogChaliceCore, Error, TEXT("FRootMotionSource_PositionCurve has invalid curve or duration"))
     	Status.SetFlag(ERootMotionSourceStatusFlags::Finished);
