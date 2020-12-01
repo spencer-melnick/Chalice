@@ -22,7 +22,7 @@
         {
           "Name": "ChaliceEditor",
           "Type": "Editor",
-          "LoadingPhase": "PreDefault"
+          "LoadingPhase": "PostEngineInit"
         }
 	],
     "Plugins": [

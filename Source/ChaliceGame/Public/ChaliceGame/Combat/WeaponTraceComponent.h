@@ -42,10 +42,14 @@ struct FWeaponTraceShape
 /**
  * Component for weapon that performs hit traces and generates Blueprint events
  */
-UCLASS()
+UCLASS(Category="Chalice|Combat", meta=(BlueprintSpawnableComponent))
 class CHALICEGAME_API UWeaponTraceComponent : public USceneComponent
 {
 	GENERATED_BODY()
+
+#if WITH_EDITOR
+	friend class FWeaponTraceVisualizer;
+#endif
 
 public:
 
@@ -109,6 +113,7 @@ protected:
 
 	// Trace functions
 
+	FTransform GetTraceShapeTransform(const FWeaponTraceShape& TraceShape) const;
 	FVector GetTraceShapeLocation(const FWeaponTraceShape& TraceShape) const;
 	void UpdateTraceLocations();
 	FGameplayEventData CreateEventFromTrace(const FHitResult& HitResult, const FWeaponTraceShape& Shape, const FGameplayTag EventTag) const;

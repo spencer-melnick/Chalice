@@ -9,6 +9,7 @@ public class ChaliceEditor : ModuleRules
         PublicDependencyModuleNames.AddRange(new string[] {
             "Core", "CoreUObject", "Engine", "InputCore",
             "GameplayAbilities", "GameplayTags", "GameplayTasks",
+            "UnrealEd",
             "ChaliceCore", "ChaliceAbilities", "ChaliceGame"
         });
 

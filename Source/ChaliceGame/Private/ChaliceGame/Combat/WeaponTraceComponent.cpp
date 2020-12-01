@@ -65,32 +65,35 @@ AChaliceCharacter* UWeaponTraceComponent::GetWeaponOwner() const
 
 // Helper functions
 
+FTransform UWeaponTraceComponent::GetTraceShapeTransform(const FWeaponTraceShape& TraceShape) const
+{
+	const FTransform ComponentTransform = GetComponentTransform();
+	if (TraceShape.Socket == NAME_None)
+	{
+		return ComponentTransform;
+	}
+	
+	const USceneComponent* ParentComponent = GetAttachParent();
+	if (!ParentComponent)
+	{
+		UE_LOG(LogChaliceGame, Warning, TEXT("%s failed - %s has no attached parent"),
+            ANSI_TO_TCHAR(__FUNCTION__), *GetNameSafe(this))
+		return ComponentTransform;
+	}
+	
+	if (!ParentComponent->DoesSocketExist(TraceShape.Socket))
+	{
+		UE_LOG(LogChaliceGame, Warning, TEXT("%s failed on %s - %s has no socket named %s"),
+			ANSI_TO_TCHAR(__FUNCTION__), *GetNameSafe(this), *GetNameSafe(ParentComponent), *TraceShape.Socket.ToString())
+		return ComponentTransform;
+	}
+	
+	return ParentComponent->GetSocketTransform(TraceShape.Socket);
+}
+
 FVector UWeaponTraceComponent::GetTraceShapeLocation(const FWeaponTraceShape& TraceShape) const
 {
-	FTransform SocketTransform = GetComponentTransform();
-
-	if (TraceShape.Socket != NAME_None)
-	{
-		const USceneComponent* ParentComponent = GetAttachParent();
-		if (ParentComponent)
-		{
-			if (ParentComponent->DoesSocketExist(TraceShape.Socket))
-			{
-				SocketTransform = ParentComponent->GetSocketTransform(TraceShape.Socket);
-			}
-			else
-			{
-				UE_LOG(LogChaliceGame, Warning, TEXT("%s failed on %s - %s has no socket named %s"),
-					ANSI_TO_TCHAR(__FUNCTION__), *GetNameSafe(this), *GetNameSafe(ParentComponent), *TraceShape.Socket.ToString())
-			}
-		}
-		else
-		{
-			UE_LOG(LogChaliceGame, Warning, TEXT("%s failed - %s has no attached parent"),
-                ANSI_TO_TCHAR(__FUNCTION__), *GetNameSafe(this))
-		}
-	}
-	return SocketTransform.TransformVector(TraceShape.Location);
+	return GetTraceShapeTransform(TraceShape).TransformVector(TraceShape.Location);
 }
 
 void UWeaponTraceComponent::UpdateTraceLocations()
