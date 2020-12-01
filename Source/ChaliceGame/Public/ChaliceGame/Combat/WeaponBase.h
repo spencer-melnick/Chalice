@@ -11,6 +11,7 @@
 // Forward declarations
 
 class AChaliceCharacter;
+class USphereComponent;
 
 
 /**
@@ -30,7 +31,7 @@ struct FWeaponTraceShape
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float Radius = 10.f;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(MakeEditWidget))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FVector Location;
 
 	UPROPERTY(BlueprintReadOnly)
@@ -61,6 +62,7 @@ public:
 
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaSeconds) override;
+	virtual void OnConstruction(const FTransform& Transform) override;
 
 
 	// Weapon controls
@@ -111,6 +113,7 @@ protected:
 	// Trace functions
 
 	FVector GetTraceShapeLocation(const FWeaponTraceShape& TraceShape) const;
+	void UpdateTraceLocations();
 	FGameplayEventData CreateEventFromTrace(const FHitResult& HitResult, const FWeaponTraceShape& Shape, const FGameplayTag EventTag) const;
 	virtual void TraceWeapon();
 
@@ -145,5 +148,18 @@ private:
 
 	UPROPERTY(BlueprintReadOnly, Category="Weapon", meta=(AllowPrivateAccess="true"))
 	bool bTraceEnabled = false;
+
+
+	// Editor display
+
+#if WITH_EDITOR
+
+	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
+	virtual void PostEditChangeChainProperty(FPropertyChangedChainEvent& PropertyChangedEvent) override;
+	void UpdateEditorSpheres();
+
+	UPROPERTY(Transient)
+	TArray<USphereComponent*> EditorSpheres;
+#endif
 	
 };

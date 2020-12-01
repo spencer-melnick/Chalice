@@ -5,6 +5,7 @@
 #include "ChaliceAbilities/System/ChaliceAbilityComponent.h"
 #include "ChaliceAbilities/System/ChaliceAbilitiesBlueprintLibrary.h"
 #include "AbilitySystemBlueprintLibrary.h"
+#include "Components/SphereComponent.h"
 
 
 // AWeaponBase
@@ -41,12 +42,25 @@ void AWeaponBase::Tick(float DeltaSeconds)
 	}
 }
 
+void AWeaponBase::OnConstruction(const FTransform& Transform)
+{
+	Super::OnConstruction(Transform);
+
+#if WITH_EDITOR
+	if (GetWorld() && !GetWorld()->IsGameWorld())
+	{
+		UpdateEditorSpheres();
+	}
+#endif
+}
+
 
 // Weapon controls
 
 void AWeaponBase::EnableTrace()
 {
 	bTraceEnabled = true;
+	UpdateTraceLocations();
 	PrimaryActorTick.SetTickFunctionEnable(true);
 }
 
@@ -71,6 +85,14 @@ FVector AWeaponBase::GetTraceShapeLocation(const FWeaponTraceShape& TraceShape) 
 {
 	const FTransform SocketTransform = MeshComponent->GetSocketTransform(TraceShape.Socket);
 	return SocketTransform.TransformVector(TraceShape.Location);
+}
+
+void AWeaponBase::UpdateTraceLocations()
+{
+	for (FWeaponTraceShape& Shape : TraceShapes)
+	{
+		Shape.LastPosition = GetTraceShapeLocation(Shape);
+	}
 }
 
 FGameplayEventData AWeaponBase::CreateEventFromTrace(const FHitResult& HitResult, const FWeaponTraceShape& Shape, const FGameplayTag EventTag) const
@@ -172,3 +194,54 @@ void AWeaponBase::OnTraceInterrupt(FGameplayEventData Event)
 	BP_OnTraceInterrupt(Event);
 }
 
+
+// Editor display
+
+#if WITH_EDITOR
+
+void AWeaponBase::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
+{
+	Super::PostEditChangeProperty(PropertyChangedEvent);
+
+	if (GetWorld() && !GetWorld()->IsGameWorld() && PropertyChangedEvent.GetPropertyName() == GET_MEMBER_NAME_CHECKED(AWeaponBase, TraceShapes))
+	{
+		UpdateEditorSpheres();
+	}
+}
+
+void AWeaponBase::PostEditChangeChainProperty(FPropertyChangedChainEvent& PropertyChangedEvent)
+{
+	Super::PostEditChangeChainProperty(PropertyChangedEvent);
+
+	if (GetWorld() && !GetWorld()->IsGameWorld() && PropertyChangedEvent.PropertyChain.GetHead()->GetValue()->NamePrivate == GET_MEMBER_NAME_CHECKED(AWeaponBase, TraceShapes))
+	{
+		UpdateEditorSpheres();
+	}
+}
+
+void AWeaponBase::UpdateEditorSpheres()
+{
+	UpdateTraceLocations();
+	EditorSpheres.SetNumZeroed(TraceShapes.Num());
+	
+	for (int32 Index = 0; Index < TraceShapes.Num(); Index++)
+	{
+		FWeaponTraceShape& TraceShape = TraceShapes[Index];
+		USphereComponent*& SphereComponent = EditorSpheres[Index];
+		
+		if (!SphereComponent)
+		{
+			SphereComponent = NewObject<USphereComponent>(this);
+			SphereComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+			SphereComponent->bSelectable = false;
+			SphereComponent->bIsEditorOnly = true;
+			SphereComponent->ShapeColor = FColor::Cyan;
+			SphereComponent->AttachToComponent(RootComponent, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+		}
+
+		SphereComponent->SetRelativeLocation(TraceShape.LastPosition);
+		SphereComponent->SetSphereRadius(TraceShape.Radius);
+	}
+}
+
+#endif
