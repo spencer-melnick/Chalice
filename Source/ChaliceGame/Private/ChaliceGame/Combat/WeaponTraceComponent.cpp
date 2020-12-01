@@ -1,40 +1,36 @@
 ﻿// Copyright (c) 2020 Spencer Melnick
 
-#include "ChaliceGame/Combat/WeaponBase.h"
+#include "ChaliceGame/Combat/WeaponTraceComponent.h"
 #include "ChaliceGame/Characters/ChaliceCharacter.h"
+#include "ChaliceGame.h"
 #include "ChaliceAbilities/System/ChaliceAbilityComponent.h"
 #include "ChaliceAbilities/System/ChaliceAbilitiesBlueprintLibrary.h"
 #include "AbilitySystemBlueprintLibrary.h"
-#include "Components/SphereComponent.h"
 
 
 // AWeaponBase
 
-AWeaponBase::AWeaponBase()
+UWeaponTraceComponent::UWeaponTraceComponent()
 {
 	// Enable ticking on activation
-	PrimaryActorTick.bCanEverTick = true;
-	PrimaryActorTick.bStartWithTickEnabled = false;
-
-	// Create default components
-	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(MeshComponentName);
-	RootComponent = MeshComponent;
+	PrimaryComponentTick.bCanEverTick = true;
+	PrimaryComponentTick.bStartWithTickEnabled = false;
 }
 
 
 // Component name constants
 
-FName AWeaponBase::MeshComponentName(TEXT("MeshComponent"));
+FName UWeaponTraceComponent::MeshComponentName(TEXT("MeshComponent"));
 
 
 // Actor overrides
 
-void AWeaponBase::BeginPlay()
+void UWeaponTraceComponent::BeginPlay()
 {
 	Super::BeginPlay();
 }
 
-void AWeaponBase::Tick(float DeltaSeconds)
+void UWeaponTraceComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	if (bTraceEnabled)
 	{
@@ -42,52 +38,62 @@ void AWeaponBase::Tick(float DeltaSeconds)
 	}
 }
 
-void AWeaponBase::OnConstruction(const FTransform& Transform)
-{
-	Super::OnConstruction(Transform);
-
-#if WITH_EDITOR
-	if (GetWorld() && !GetWorld()->IsGameWorld())
-	{
-		UpdateEditorSpheres();
-	}
-#endif
-}
-
 
 // Weapon controls
 
-void AWeaponBase::EnableTrace()
+void UWeaponTraceComponent::EnableTrace()
 {
 	bTraceEnabled = true;
 	UpdateTraceLocations();
-	PrimaryActorTick.SetTickFunctionEnable(true);
+	PrimaryComponentTick.SetTickFunctionEnable(true);
 }
 
-void AWeaponBase::DisableTrace()
+void UWeaponTraceComponent::DisableTrace()
 {
 	bTraceEnabled = false;
-	PrimaryActorTick.SetTickFunctionEnable(false);
+	PrimaryComponentTick.SetTickFunctionEnable(false);
 }
 
 
 // Accessors
 
-AChaliceCharacter* AWeaponBase::GetWeaponOwner() const
+AChaliceCharacter* UWeaponTraceComponent::GetWeaponOwner() const
 {
-	return Cast<AChaliceCharacter>(GetAttachParentActor());
+	return Cast<AChaliceCharacter>(GetOwner()->GetAttachParentActor());
 }
 
 
 // Helper functions
 
-FVector AWeaponBase::GetTraceShapeLocation(const FWeaponTraceShape& TraceShape) const
+FVector UWeaponTraceComponent::GetTraceShapeLocation(const FWeaponTraceShape& TraceShape) const
 {
-	const FTransform SocketTransform = MeshComponent->GetSocketTransform(TraceShape.Socket);
+	FTransform SocketTransform = GetComponentTransform();
+
+	if (TraceShape.Socket != NAME_None)
+	{
+		const USceneComponent* ParentComponent = GetAttachParent();
+		if (ParentComponent)
+		{
+			if (ParentComponent->DoesSocketExist(TraceShape.Socket))
+			{
+				SocketTransform = ParentComponent->GetSocketTransform(TraceShape.Socket);
+			}
+			else
+			{
+				UE_LOG(LogChaliceGame, Warning, TEXT("%s failed on %s - %s has no socket named %s"),
+					ANSI_TO_TCHAR(__FUNCTION__), *GetNameSafe(this), *GetNameSafe(ParentComponent), *TraceShape.Socket.ToString())
+			}
+		}
+		else
+		{
+			UE_LOG(LogChaliceGame, Warning, TEXT("%s failed - %s has no attached parent"),
+                ANSI_TO_TCHAR(__FUNCTION__), *GetNameSafe(this))
+		}
+	}
 	return SocketTransform.TransformVector(TraceShape.Location);
 }
 
-void AWeaponBase::UpdateTraceLocations()
+void UWeaponTraceComponent::UpdateTraceLocations()
 {
 	for (FWeaponTraceShape& Shape : TraceShapes)
 	{
@@ -95,11 +101,11 @@ void AWeaponBase::UpdateTraceLocations()
 	}
 }
 
-FGameplayEventData AWeaponBase::CreateEventFromTrace(const FHitResult& HitResult, const FWeaponTraceShape& Shape, const FGameplayTag EventTag) const
+FGameplayEventData UWeaponTraceComponent::CreateEventFromTrace(const FHitResult& HitResult, const FWeaponTraceShape& Shape, const FGameplayTag EventTag) const
 {
 	FGameplayEventData EventData;
 	EventData.EventTag = EventTag;
-	EventData.Instigator = this;
+	EventData.Instigator = GetOwner();
 	EventData.Target = HitResult.Actor.Get();
 	EventData.InstigatorTags = UChaliceAbilitiesBlueprintLibrary::GetActorOwnedTags(HitResult.GetActor());
 	EventData.InstigatorTags.AppendTags(Shape.Tags);
@@ -108,7 +114,7 @@ FGameplayEventData AWeaponBase::CreateEventFromTrace(const FHitResult& HitResult
 	return EventData;
 }
 
-void AWeaponBase::TraceWeapon()
+void UWeaponTraceComponent::TraceWeapon()
 {
 	TArray<FGameplayEventData> HitEvents;
 	bool bInterrupted = false;
@@ -150,7 +156,7 @@ void AWeaponBase::TraceWeapon()
 	}
 }
 
-bool AWeaponBase::MeetsTargetRequirements(const FHitResult& HitResult)
+bool UWeaponTraceComponent::MeetsTargetRequirements(const FHitResult& HitResult)
 {
 	AActor* Actor = HitResult.GetActor();
 	if (!Actor || !UChaliceAbilitiesBlueprintLibrary::GetAbilityComponent(Actor))
@@ -160,7 +166,7 @@ bool AWeaponBase::MeetsTargetRequirements(const FHitResult& HitResult)
 	return TargetRequirements.RequirementsMet(UChaliceAbilitiesBlueprintLibrary::GetActorOwnedTags(Actor));
 }
 
-bool AWeaponBase::MeetsInterruptRequirements(const FHitResult& HitResult)
+bool UWeaponTraceComponent::MeetsInterruptRequirements(const FHitResult& HitResult)
 {
 	AActor* Actor = HitResult.GetActor();
 	if (!Actor || !UChaliceAbilitiesBlueprintLibrary::GetAbilityComponent(Actor))
@@ -173,7 +179,7 @@ bool AWeaponBase::MeetsInterruptRequirements(const FHitResult& HitResult)
 
 // Events
 
-void AWeaponBase::OnTraceHit(TArray<FGameplayEventData>& Events)
+void UWeaponTraceComponent::OnTraceHit(TArray<FGameplayEventData>& Events)
 {
 	AChaliceCharacter* WeaponOwner = GetWeaponOwner();
 	for (FGameplayEventData& Event : Events)
@@ -182,66 +188,10 @@ void AWeaponBase::OnTraceHit(TArray<FGameplayEventData>& Events)
 		// Why can't the actor be const? >:(
 		UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(const_cast<AActor*>(Event.Target), HitEventTag, Event);
 	}
-
-	BP_OnTraceHit(Events);
 }
 
-void AWeaponBase::OnTraceInterrupt(FGameplayEventData Event)
+void UWeaponTraceComponent::OnTraceInterrupt(FGameplayEventData Event)
 {
 	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(GetWeaponOwner(), InterruptEventTag, Event);
 	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(const_cast<AActor*>(Event.Target), InterruptEventTag, Event);
-
-	BP_OnTraceInterrupt(Event);
 }
-
-
-// Editor display
-
-#if WITH_EDITOR
-
-void AWeaponBase::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
-{
-	Super::PostEditChangeProperty(PropertyChangedEvent);
-
-	if (GetWorld() && !GetWorld()->IsGameWorld() && PropertyChangedEvent.GetPropertyName() == GET_MEMBER_NAME_CHECKED(AWeaponBase, TraceShapes))
-	{
-		UpdateEditorSpheres();
-	}
-}
-
-void AWeaponBase::PostEditChangeChainProperty(FPropertyChangedChainEvent& PropertyChangedEvent)
-{
-	Super::PostEditChangeChainProperty(PropertyChangedEvent);
-
-	if (GetWorld() && !GetWorld()->IsGameWorld() && PropertyChangedEvent.PropertyChain.GetHead()->GetValue()->NamePrivate == GET_MEMBER_NAME_CHECKED(AWeaponBase, TraceShapes))
-	{
-		UpdateEditorSpheres();
-	}
-}
-
-void AWeaponBase::UpdateEditorSpheres()
-{
-	UpdateTraceLocations();
-	EditorSpheres.SetNumZeroed(TraceShapes.Num());
-	
-	for (int32 Index = 0; Index < TraceShapes.Num(); Index++)
-	{
-		FWeaponTraceShape& TraceShape = TraceShapes[Index];
-		USphereComponent*& SphereComponent = EditorSpheres[Index];
-		
-		if (!SphereComponent)
-		{
-			SphereComponent = NewObject<USphereComponent>(this);
-			SphereComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-			SphereComponent->bSelectable = false;
-			SphereComponent->bIsEditorOnly = true;
-			SphereComponent->ShapeColor = FColor::Cyan;
-			SphereComponent->AttachToComponent(RootComponent, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
-		}
-
-		SphereComponent->SetRelativeLocation(TraceShape.LastPosition);
-		SphereComponent->SetSphereRadius(TraceShape.Radius);
-	}
-}
-
-#endif

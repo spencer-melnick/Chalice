@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameplayEffectTypes.h"
 #include "Abilities/GameplayAbilityTypes.h"
-#include "WeaponBase.generated.h"
+#include "WeaponTraceComponent.generated.h"
 
 
 // Forward declarations
@@ -40,17 +40,16 @@ struct FWeaponTraceShape
 
 
 /**
- * Base class for weapons held by characters. Grants abilities associated with that weapon, and performs traces for
- * collision. Can be physical weapons like swords, or abstract weapons like hit boxes on a character's fists
+ * Component for weapon that performs hit traces and generates Blueprint events
  */
 UCLASS()
-class CHALICEGAME_API AWeaponBase : public AActor
+class CHALICEGAME_API UWeaponTraceComponent : public USceneComponent
 {
 	GENERATED_BODY()
 
 public:
 
-	AWeaponBase();
+	UWeaponTraceComponent();
 
 
 	// Component name constants
@@ -61,8 +60,7 @@ public:
 	// Actor overrides
 
 	virtual void BeginPlay() override;
-	virtual void Tick(float DeltaSeconds) override;
-	virtual void OnConstruction(const FTransform& Transform) override;
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 
 	// Weapon controls
@@ -79,7 +77,6 @@ public:
 	// Accessors
 
 	AChaliceCharacter* GetWeaponOwner() const;
-	UMeshComponent* GetMeshComponent() const { return MeshComponent; }
 	bool IsTraceEnabled() const { return bTraceEnabled; }
 
 
@@ -138,28 +135,9 @@ protected:
 	
 private:
 
-	// Default components
-	
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Weapon", meta=(AllowPrivateAccess="true"))
-	UMeshComponent* MeshComponent;
-
-
 	// Weapon properties
 
 	UPROPERTY(BlueprintReadOnly, Category="Weapon", meta=(AllowPrivateAccess="true"))
 	bool bTraceEnabled = false;
-
-
-	// Editor display
-
-#if WITH_EDITOR
-
-	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
-	virtual void PostEditChangeChainProperty(FPropertyChangedChainEvent& PropertyChangedEvent) override;
-	void UpdateEditorSpheres();
-
-	UPROPERTY(Transient)
-	TArray<USphereComponent*> EditorSpheres;
-#endif
 	
 };
