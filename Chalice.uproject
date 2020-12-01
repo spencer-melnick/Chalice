@@ -18,7 +18,12 @@
 			"Name": "ChaliceGame",
 			"Type": "Runtime",
 			"LoadingPhase": "Default"
-		}
+		},
+        {
+          "Name": "ChaliceEditor",
+          "Type": "Editor",
+          "LoadingPhase": "PreDefault"
+        }
 	],
     "Plugins": [
       {
