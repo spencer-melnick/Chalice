@@ -8,7 +8,7 @@
 #include "AbilitySystemBlueprintLibrary.h"
 
 
-// AWeaponBase
+// UWeaponTraceComponent
 
 UWeaponTraceComponent::UWeaponTraceComponent()
 {
@@ -18,12 +18,7 @@ UWeaponTraceComponent::UWeaponTraceComponent()
 }
 
 
-// Component name constants
-
-FName UWeaponTraceComponent::MeshComponentName(TEXT("MeshComponent"));
-
-
-// Actor overrides
+// Component overrides
 
 void UWeaponTraceComponent::BeginPlay()
 {
@@ -39,7 +34,7 @@ void UWeaponTraceComponent::TickComponent(float DeltaTime, ELevelTick TickType, 
 }
 
 
-// Weapon controls
+// Trace controls
 
 void UWeaponTraceComponent::EnableTrace()
 {
@@ -127,23 +122,24 @@ void UWeaponTraceComponent::TraceWeapon()
 		const FVector OldShapeLocation = TraceShape.LastPosition;
 		const FVector NewShapeLocation = GetTraceShapeLocation(TraceShape);
 
-		TArray<FHitResult> HitResults;
-		GetWorld()->SweepMultiByProfile(HitResults, OldShapeLocation, NewShapeLocation, FQuat::Identity, TraceProfile, FCollisionShape::MakeSphere(TraceShape.Radius));
-
-		for (const FHitResult& HitResult : HitResults)
+		if (!bInterrupted)
 		{
-			if (MeetsInterruptRequirements(HitResult))
+			TArray<FHitResult> HitResults;
+			GetWorld()->SweepMultiByProfile(HitResults, OldShapeLocation, NewShapeLocation, FQuat::Identity, TraceProfile, FCollisionShape::MakeSphere(TraceShape.Radius));
+
+			for (const FHitResult& HitResult : HitResults)
 			{
-				// Dump all hit events except the one that interrupted our trace
-				bInterrupted = true;
-				HitEvents.Empty(1);
-				HitEvents.Add(CreateEventFromTrace(HitResult, TraceShape, InterruptEventTag));
-				break;
-			}
-			
-			if (MeetsTargetRequirements(HitResult))
-			{
-				HitEvents.Add(CreateEventFromTrace(HitResult, TraceShape, HitEventTag));
+				if (MeetsInterruptRequirements(HitResult))
+				{
+					// Dump all hit events except the one that interrupted our trace
+					bInterrupted = true;
+					HitEvents.Empty(1);
+					HitEvents.Add(CreateEventFromTrace(HitResult, TraceShape, InterruptEventTag));
+				}
+				else if (MeetsTargetRequirements(HitResult))
+				{
+					HitEvents.Add(CreateEventFromTrace(HitResult, TraceShape, HitEventTag));
+				}
 			}
 		}
 	}

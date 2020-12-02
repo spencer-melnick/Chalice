@@ -56,18 +56,13 @@ public:
 	UWeaponTraceComponent();
 
 
-	// Component name constants
-
-	static FName MeshComponentName;
-
-
-	// Actor overrides
+	// Component overrides
 
 	virtual void BeginPlay() override;
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 
-	// Weapon controls
+	// Trace controls
 
 	// Starts tracing weapon colliders on every tick, generating hit events for relevant ability components
 	UFUNCTION(BlueprintCallable, Category="Weapon")
@@ -136,7 +131,7 @@ protected:
 
 	UFUNCTION(BlueprintImplementableEvent, Category="Weapon", meta=(DisplayName="On Trace Interrupt"))
 	void BP_OnTraceInterrupt(FGameplayEventData Event);
-
+	
 	
 private:
 
