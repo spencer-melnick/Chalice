@@ -93,7 +93,7 @@ FTransform UWeaponTraceComponent::GetTraceShapeTransform(const FWeaponTraceShape
 
 FVector UWeaponTraceComponent::GetTraceShapeLocation(const FWeaponTraceShape& TraceShape) const
 {
-	return GetTraceShapeTransform(TraceShape).TransformVector(TraceShape.Location);
+	return GetTraceShapeTransform(TraceShape).TransformPosition(TraceShape.Location);
 }
 
 void UWeaponTraceComponent::UpdateTraceLocations()

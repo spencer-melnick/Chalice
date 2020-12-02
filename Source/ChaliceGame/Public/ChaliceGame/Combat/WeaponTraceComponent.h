@@ -92,7 +92,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Weapon")
 	FName TraceProfile;
 	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Weapon")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Weapon")
 	TArray<FWeaponTraceShape> TraceShapes;
 
 	// Only trigger hit events for targets with all of the following tags

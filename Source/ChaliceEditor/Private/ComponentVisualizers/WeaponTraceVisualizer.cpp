@@ -49,9 +49,7 @@ bool FWeaponTraceVisualizer::VisProxyHandleClick(FEditorViewportClient* InViewpo
 
 bool FWeaponTraceVisualizer::GetCustomInputCoordinateSystem(const FEditorViewportClient* ViewportClient, FMatrix& OutMatrix) const
 {
-	return false;
-	
-	/* UWeaponTraceComponent* TraceComponent = GetEditedTraceComponent();
+	UWeaponTraceComponent* TraceComponent = GetEditedTraceComponent();
 	FWeaponTraceShape* TraceShape = GetEditedTraceShape();
 
 	if (!TraceComponent || !TraceShape)
@@ -59,15 +57,13 @@ bool FWeaponTraceVisualizer::GetCustomInputCoordinateSystem(const FEditorViewpor
 		return false;
 	}
 
-	OutMatrix = TraceComponent->GetTraceShapeTransform(*TraceShape).ToMatrixWithScale();
-	return true; */
+	OutMatrix = FRotationMatrix::Make(TraceComponent->GetTraceShapeTransform(*TraceShape).Rotator());
+	return true;
 }
 
 bool FWeaponTraceVisualizer::GetWidgetLocation(const FEditorViewportClient* ViewportClient, FVector& OutLocation) const
 {
-	return false;
-	
-	/* UWeaponTraceComponent* TraceComponent = GetEditedTraceComponent();
+	UWeaponTraceComponent* TraceComponent = GetEditedTraceComponent();
 	FWeaponTraceShape* TraceShape = GetEditedTraceShape();
 
 	if (!TraceComponent || !TraceShape)
@@ -76,14 +72,12 @@ bool FWeaponTraceVisualizer::GetWidgetLocation(const FEditorViewportClient* View
 	}
 
 	OutLocation = TraceComponent->GetTraceShapeLocation(*TraceShape);
-	return true; */
+	return true;
 }
 
 bool FWeaponTraceVisualizer::HandleInputDelta(FEditorViewportClient* ViewportClient, FViewport* Viewport, FVector& DeltaTranslate, FRotator& DeltaRotate, FVector& DeltaScale)
 {
-	return false;
-	
-	/* UWeaponTraceComponent* TraceComponent = GetEditedTraceComponent();
+	UWeaponTraceComponent* TraceComponent = GetEditedTraceComponent();
 	FWeaponTraceShape* TraceShape = GetEditedTraceShape();
 
 	if (!TraceComponent || !TraceShape)
@@ -91,9 +85,9 @@ bool FWeaponTraceVisualizer::HandleInputDelta(FEditorViewportClient* ViewportCli
 		return false;
 	}
 
-	TraceShape->Radius *= DeltaScale.Size();
-	TraceShape->Location += DeltaTranslate;
-	return true;*/
+	const FTransform ShapeTransform = TraceComponent->GetTraceShapeTransform(*TraceShape);
+	TraceShape->Location += ShapeTransform.InverseTransformVectorNoScale(DeltaTranslate);
+	return true;
 }
 
 
