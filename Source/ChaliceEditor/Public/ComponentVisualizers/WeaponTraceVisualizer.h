@@ -37,7 +37,7 @@ private:
 
 	UWeaponTraceComponent* GetEditedTraceComponent() const;
 	FWeaponTraceShape* GetEditedTraceShape() const;
-	void EndEditing() override;
+	virtual void EndEditing() override;
 	
 
 	int32 SelectedShapeIndex = INDEX_NONE;
