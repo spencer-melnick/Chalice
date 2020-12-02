@@ -36,6 +36,10 @@ struct FWeaponTraceShape
 
 	UPROPERTY(BlueprintReadOnly)
 	FVector LastPosition;
+
+#ifdef CHALICE_DEBUG
+	FVector PreviousPosition;
+#endif
 };
 
 
@@ -112,6 +116,13 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category="Weapon")
 	FVector GetTraceShapeLocation(const FWeaponTraceShape& TraceShape) const;
+
+
+	// Extra debug data
+
+#ifdef CHALICE_DEBUG
+	TArray<FVector> LastHitLocations;
+#endif
 	
 
 protected:

@@ -13,6 +13,7 @@ public class ChaliceEditorTarget : TargetRules
         
         if (bBuildDeveloperTools)
         {
+            ProjectDefinitions.AddRange(new string[] { "CHALICE_DEBUG" });
             ExtraModuleNames.AddRange(new string[] { "ChaliceDebug" });
         }
 	}

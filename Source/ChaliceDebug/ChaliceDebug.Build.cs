@@ -13,7 +13,5 @@ public class ChaliceDebug : ModuleRules
         });
 
         PrivateDependencyModuleNames.AddRange(new string[] {  });
-        
-        PublicDefinitions.AddRange(new string[] { "CHALICE_DEBUG" });
     }
 }

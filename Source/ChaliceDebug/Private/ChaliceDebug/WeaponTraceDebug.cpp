@@ -31,7 +31,21 @@ void FWeaponTraceDebug::DrawDebugInfo(UWeaponTraceComponent* TraceComponent, AHU
 
 	for (const FWeaponTraceShape& TraceShape : TraceComponent->TraceShapes)
 	{
-		DrawDebugSphere(HUD->GetWorld(), TraceComponent->GetTraceShapeLocation(TraceShape), TraceShape.Radius, 16, FColor::Cyan);
+		const FVector TraceLocation = TraceComponent->GetTraceShapeLocation(TraceShape);
+		DrawDebugSphere(HUD->GetWorld(), TraceLocation, TraceShape.Radius, 16, FColor::Cyan);
+
+		if (TraceComponent->IsTraceEnabled())
+		{
+			DrawDebugLine(HUD->GetWorld(), TraceShape.PreviousPosition, TraceLocation, FColor::Red, false, 0.3f, 0, 1.f);
+		}
+	}
+
+	if (TraceComponent->IsTraceEnabled())
+	{
+		for (const FVector& HitLocation : TraceComponent->LastHitLocations)
+		{
+			DrawDebugPoint(HUD->GetWorld(), HitLocation, 10.f, FColor::Green);
+		}
 	}
 }
 

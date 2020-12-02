@@ -122,6 +122,11 @@ void UWeaponTraceComponent::TraceWeapon()
 		const FVector OldShapeLocation = TraceShape.LastPosition;
 		const FVector NewShapeLocation = GetTraceShapeLocation(TraceShape);
 
+		TraceShape.LastPosition = NewShapeLocation;
+#ifdef CHALICE_DEBUG
+		TraceShape.PreviousPosition = OldShapeLocation;
+#endif
+
 		if (!bInterrupted)
 		{
 			TArray<FHitResult> HitResults;
@@ -153,6 +158,15 @@ void UWeaponTraceComponent::TraceWeapon()
 	{
 		OnTraceHit(HitEvents);
 	}
+
+#ifdef CHALICE_DEBUG
+	LastHitLocations.Empty(HitEvents.Num());
+	
+	for (FGameplayEventData& Event : HitEvents)
+	{
+		LastHitLocations.Add(Event.TargetData.Get(0)->GetHitResult()->Location);
+	}
+#endif
 }
 
 bool UWeaponTraceComponent::MeetsTargetRequirements(const FHitResult& HitResult)
