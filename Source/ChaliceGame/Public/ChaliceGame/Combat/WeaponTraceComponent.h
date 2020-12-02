@@ -104,12 +104,20 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Weapon")
 	FGameplayTag InterruptEventTag;
 
+
+	// Trace functions
+
+	UFUNCTION(BlueprintCallable, Category="Weapon")
+	FTransform GetTraceShapeTransform(const FWeaponTraceShape& TraceShape) const;
+
+	UFUNCTION(BlueprintCallable, Category="Weapon")
+	FVector GetTraceShapeLocation(const FWeaponTraceShape& TraceShape) const;
+	
+
 protected:
 
 	// Trace functions
 
-	FTransform GetTraceShapeTransform(const FWeaponTraceShape& TraceShape) const;
-	FVector GetTraceShapeLocation(const FWeaponTraceShape& TraceShape) const;
 	void UpdateTraceLocations();
 	FGameplayEventData CreateEventFromTrace(const FHitResult& HitResult, const FWeaponTraceShape& Shape, const FGameplayTag EventTag) const;
 	virtual void TraceWeapon();
