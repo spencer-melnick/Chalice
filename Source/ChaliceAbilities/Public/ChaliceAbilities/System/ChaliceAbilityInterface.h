@@ -24,5 +24,7 @@ class CHALICEABILITIES_API IChaliceAbilityInterface
 {
 	GENERATED_BODY()
 
+public:
+
 	virtual UChaliceAbilityComponent* GetChaliceAbilityComponent() const = 0;
 };

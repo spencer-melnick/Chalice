@@ -18,7 +18,17 @@
 			"Name": "ChaliceGame",
 			"Type": "Runtime",
 			"LoadingPhase": "Default"
-		}
+		},
+        {
+            "Name": "ChaliceDebug",
+            "Type": "DeveloperTool",
+            "LoadingPhase": "Default"
+        },
+        {
+          "Name": "ChaliceEditor",
+          "Type": "Editor",
+          "LoadingPhase": "PostEngineInit"
+        }
 	],
     "Plugins": [
       {
