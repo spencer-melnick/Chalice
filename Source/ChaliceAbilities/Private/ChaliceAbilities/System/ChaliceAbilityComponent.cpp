@@ -133,7 +133,7 @@ void UChaliceAbilityComponent::BufferInput(int32 InputID)
 	NewBufferedInput.InputID = InputID;
 	NewBufferedInput.BufferedTime = World->GetRealTimeSeconds();
 
-	ACharacter* Character = Cast<ACharacter>(AvatarActor);
+	ACharacter* Character = Cast<ACharacter>(GetAvatarActor());
 	if (Character)
 	{
 		NewBufferedInput.MovementInput = Character->GetLastMovementInputVector();
@@ -142,7 +142,7 @@ void UChaliceAbilityComponent::BufferInput(int32 InputID)
 	{
 		NewBufferedInput.MovementInput = FVector::ZeroVector;
 		UE_LOG(LogChaliceAbilities, Warning, TEXT("%s could not get movement input on %s - avatar actor %s is not a character"),
-			ANSI_TO_TCHAR(__FUNCTION__), *GetNameSafe(this), *GetNameSafe(AvatarActor))
+			ANSI_TO_TCHAR(__FUNCTION__), *GetNameSafe(this), *GetNameSafe(GetAvatarActor()))
 	}
 
 	InputBuffer.Push(NewBufferedInput);
@@ -264,11 +264,11 @@ FVector UChaliceAbilityComponent::GetLastMovementInput() const
 		return BufferedMovementInput;
 	}
 
-	const ACharacter* Character = Cast<ACharacter>(AvatarActor);
+	const ACharacter* Character = Cast<ACharacter>(GetAvatarActor());
 	if (!Character)
 	{
 		UE_LOG(LogChaliceAbilities, Warning, TEXT("%s failed on %s - %s is not a valid character"),
-			ANSI_TO_TCHAR(__FUNCTION__), *GetNameSafe(this), *GetNameSafe(AvatarActor))
+			ANSI_TO_TCHAR(__FUNCTION__), *GetNameSafe(this), *GetNameSafe(GetAvatarActor()))
 		return FVector::ZeroVector;
 	}
 

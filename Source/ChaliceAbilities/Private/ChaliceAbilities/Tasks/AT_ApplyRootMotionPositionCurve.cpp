@@ -40,7 +40,7 @@ void UAbilityTask_ApplyRootMotionPositionCurve::SharedInitAndApply()
         if (MovementComponent)
         {
             ForceName = ForceName.IsNone() ? FName(TEXT("AbilityTaskApplyRootMotionPositionCurve")) : ForceName;
-            FRootMotionSource_PositionCurve* RootMotionSource = new FRootMotionSource_PositionCurve();
+            TSharedPtr<FRootMotionSource_PositionCurve> RootMotionSource = MakeShareable(new FRootMotionSource_PositionCurve());
             RootMotionSource->InstanceName = ForceName;
             RootMotionSource->AccumulateMode = ERootMotionAccumulateMode::Override;
             RootMotionSource->Priority = 6;

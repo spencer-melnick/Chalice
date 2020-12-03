@@ -130,7 +130,7 @@ void UWeaponTraceComponent::TraceWeapon()
 		if (!bInterrupted)
 		{
 			TArray<FHitResult> HitResults;
-			GetWorld()->SweepMultiByProfile(HitResults, OldShapeLocation, NewShapeLocation, FQuat::Identity, TraceProfile, FCollisionShape::MakeSphere(TraceShape.Radius));
+			GetWorld()->SweepMultiByProfile(HitResults, OldShapeLocation, NewShapeLocation, FQuat::Identity, TraceProfile.Name, FCollisionShape::MakeSphere(TraceShape.Radius));
 
 			for (const FHitResult& HitResult : HitResults)
 			{
