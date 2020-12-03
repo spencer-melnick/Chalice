@@ -1,19 +1,19 @@
 {
 	"FileVersion": 3,
-	"EngineAssociation": "4.25",
+	"EngineAssociation": "4.26",
 	"Category": "",
 	"Description": "",
 	"Modules": [
-        {
-          "Name": "ChaliceCore",
-          "Type": "Runtime",
-          "LoadingPhase": "Default"
-        },
-        {
-          "Name": "ChaliceAbilities",
-          "Type": "Runtime",
-          "LoadingPhase": "Default"
-        },
+		{
+			"Name": "ChaliceCore",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		},
+		{
+			"Name": "ChaliceAbilities",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		},
 		{
 			"Name": "ChaliceGame",
 			"Type": "Runtime",
@@ -30,10 +30,14 @@
           "LoadingPhase": "PostEngineInit"
         }
 	],
-    "Plugins": [
-      {
-        "Name": "GameplayAbilities",
-        "Enabled": true
-      }
-    ]
+	"Plugins": [
+		{
+			"Name": "GameplayAbilities",
+			"Enabled": true
+		},
+		{
+			"Name": "Water",
+			"Enabled": true
+		}
+	]
 }
