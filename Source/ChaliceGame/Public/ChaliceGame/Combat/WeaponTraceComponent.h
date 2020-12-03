@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameplayEffectTypes.h"
 #include "Abilities/GameplayAbilityTypes.h"
+#include "Engine/CollisionProfile.h"
 #include "WeaponTraceComponent.generated.h"
 
 
@@ -89,7 +90,7 @@ public:
 	FGameplayTagContainer WeaponTags;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Weapon")
-	FName TraceProfile;
+	FCollisionProfileName TraceProfile;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Weapon")
 	TArray<FWeaponTraceShape> TraceShapes;
