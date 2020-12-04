@@ -10,7 +10,7 @@ public class ChaliceAbilities : ModuleRules
 	
         PublicDependencyModuleNames.AddRange(new string[]
         {
-            "Core", "CoreUObject", "Engine", "InputCore",
+            "Core", "CoreUObject", "Engine", "InputCore", "DeveloperSettings",
             "GameplayAbilities", "GameplayTags", "GameplayTasks",
             "ChaliceCore"
         });

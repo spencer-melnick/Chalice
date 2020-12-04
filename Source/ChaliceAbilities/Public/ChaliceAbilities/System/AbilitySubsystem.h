@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "Subsystems/EngineSubsystem.h"
-#include "GameplayTags.h"
 #include "AbilitySubsystem.generated.h"
 
 
@@ -22,19 +21,5 @@ public:
 	
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 	virtual void Deinitialize() override;
-
-
-	// Configuration properties
-
-	UPROPERTY(Config)
-	bool bInputBufferEnabled = true;
-
-	UPROPERTY(Config)
-	float InputBufferTime = 0.5f;
-
-	UPROPERTY(Config)
-	uint32 InputBufferSize = 2;
-
-	UPROPERTY(Config)
-	FGameplayTag HitEventTag;
+	
 };

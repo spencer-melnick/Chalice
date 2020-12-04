@@ -1,7 +1,7 @@
 ﻿// Copyright (c) 2020 Spencer Melnick
 
 #include "ChaliceAbilities/System/ChaliceAbilityComponent.h"
-#include "ChaliceAbilities/System/AbilitySubsystem.h"
+#include "ChaliceAbilities/System/ChaliceAbilitySetttings.h"
 #include "ChaliceAbilities/Abilities/ChaliceAbility.h"
 #include "ChaliceAbilities.h"
 #include "GameFramework/Character.h"
@@ -82,8 +82,7 @@ void UChaliceAbilityComponent::BindAbilityActivationToInputComponent(UInputCompo
 
 bool UChaliceAbilityComponent::GetShouldTick() const
 {
-	const UAbilitySubsystem* AbilitySubsystem = GEngine->GetEngineSubsystem<UAbilitySubsystem>();
-	if (AbilitySubsystem && AbilitySubsystem->bInputBufferEnabled && InputBuffer.Num() > 0)
+	if (UChaliceAbilitySettings::Get()->bInputBufferEnabled && InputBuffer.Num() > 0)
 	{
 		return true;
 	}
@@ -103,15 +102,9 @@ void UChaliceAbilityComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 
 void UChaliceAbilityComponent::BufferInput(int32 InputID)
 {
-	const UAbilitySubsystem* AbilitySubsystem = GEngine->GetEngineSubsystem<UAbilitySubsystem>();
+	const UChaliceAbilitySettings* AbilitySettings = UChaliceAbilitySettings::Get();
 	const UWorld* World = GetWorld();
 
-	if (!AbilitySubsystem)
-	{
-		UE_LOG(LogChaliceAbilities, Warning, TEXT("%s failed on %s - ability subsystem not found"),
-			ANSI_TO_TCHAR(__FUNCTION__), *GetNameSafe(this))
-		return;
-	}
 	if (!World)
 	{
 		UE_LOG(LogChaliceAbilities, Warning, TEXT("%s failed on %s - world not found"),
@@ -119,12 +112,12 @@ void UChaliceAbilityComponent::BufferInput(int32 InputID)
 		return;
 	}
 
-	if (!AbilitySubsystem->bInputBufferEnabled || AbilitySubsystem->InputBufferSize == 0)
+	if (!AbilitySettings->bInputBufferEnabled || AbilitySettings->InputBufferSize == 0)
 	{
 		return;
 	}
 
-	while (InputBuffer.Num() >= static_cast<int32>(AbilitySubsystem->InputBufferSize))
+	while (InputBuffer.Num() >= static_cast<int32>(AbilitySettings->InputBufferSize))
 	{
 		InputBuffer.RemoveAt(0);
 	}
@@ -160,15 +153,9 @@ void UChaliceAbilityComponent::PopInput()
 
 void UChaliceAbilityComponent::PollBufferedInputs()
 {
-	const UAbilitySubsystem* AbilitySubsystem = GEngine->GetEngineSubsystem<UAbilitySubsystem>();
+	const UChaliceAbilitySettings* AbilitySettings = UChaliceAbilitySettings::Get();
 	const UWorld* World = GetWorld();
 
-	if (!AbilitySubsystem)
-	{
-		UE_LOG(LogChaliceAbilities, Warning, TEXT("%s failed on %s - ability subsystem not found"),
-            ANSI_TO_TCHAR(__FUNCTION__), *GetNameSafe(this))
-		return;
-	}
 	if (!World)
 	{
 		UE_LOG(LogChaliceAbilities, Warning, TEXT("%s failed on %s - world not found"),
@@ -176,7 +163,7 @@ void UChaliceAbilityComponent::PollBufferedInputs()
 		return;
 	}
 
-	if (!AbilitySubsystem->bInputBufferEnabled)
+	if (!AbilitySettings->bInputBufferEnabled)
 	{
 		return;
 	}
@@ -189,7 +176,7 @@ void UChaliceAbilityComponent::PollBufferedInputs()
 		const FBufferedInput& BufferedInput = InputBuffer[0];
 		BufferedMovementInput = BufferedInput.MovementInput;
 
-		if ((CurrentRealTime - BufferedInput.BufferedTime) >= AbilitySubsystem->InputBufferTime)
+		if ((CurrentRealTime - BufferedInput.BufferedTime) >= AbilitySettings->InputBufferTime)
 		{
 			// Pop expired inputs
 			PopInput();

@@ -2,7 +2,7 @@
 
 #include "ChaliceAbilities/Abilities/AttackAbility.h"
 #include "ChaliceAbilities/Tasks/AT_PlayMontageAndWaitForEvent.h"
-#include "ChaliceAbilities/System/AbilitySubsystem.h"
+#include "ChaliceAbilities/System/ChaliceAbilitySetttings.h"
 
 
 // UAttackAbility
@@ -32,12 +32,9 @@ void UAttackAbility::ActivateAbility(
 		CancelAbility(Handle, ActorInfo, ActivationInfo, true);
 		return;
 	}
-
-	const UAbilitySubsystem* AbilitySubsystem = GEngine->GetEngineSubsystem<UAbilitySubsystem>();
-	check(AbilitySubsystem);
-
+	
 	UAbilityTask_PlayMontageAndWaitForEvent* MontageTask = UAbilityTask_PlayMontageAndWaitForEvent::PlayMontageAndWaitForEvent(
-		this, TEXT("PlayAttackMontage"), AttackMontage, AbilitySubsystem->HitEventTag.GetSingleTagContainer(), MontageRate, MontageSection);
+		this, TEXT("PlayAttackMontage"), AttackMontage, UChaliceAbilitySettings::Get()->HitEventTag.GetSingleTagContainer(), MontageRate, MontageSection);
 	MontageTask->EventReceived.AddDynamic(this, &UAttackAbility::OnHitEnemy);
 	MontageTask->OnCompleted.AddDynamic(this, &UAttackAbility::OnAnimationEnd);
 }
