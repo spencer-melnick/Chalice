@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Subsystems/EngineSubsystem.h"
+#include "GameplayTags.h"
 #include "AbilitySubsystem.generated.h"
 
 
@@ -33,4 +34,7 @@ public:
 
 	UPROPERTY(Config)
 	uint32 InputBufferSize = 2;
+
+	UPROPERTY(Config)
+	FGameplayTag HitEventTag;
 };
