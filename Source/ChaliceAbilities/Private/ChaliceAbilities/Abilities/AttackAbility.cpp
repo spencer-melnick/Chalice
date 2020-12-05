@@ -37,6 +37,7 @@ void UAttackAbility::ActivateAbility(
 		this, TEXT("PlayAttackMontage"), AttackMontage, UChaliceAbilitySettings::Get()->HitEventTag.GetSingleTagContainer(), MontageRate, MontageSection);
 	MontageTask->EventReceived.AddDynamic(this, &UAttackAbility::OnHitEnemy);
 	MontageTask->OnCompleted.AddDynamic(this, &UAttackAbility::OnAnimationEnd);
+	MontageTask->OnInterrupted.AddDynamic(this, &UAttackAbility::OnAnimationEnd);
 	MontageTask->ReadyForActivation();
 }
 
