@@ -69,6 +69,20 @@ void AChaliceCharacter::Tick(float DeltaSeconds)
 	Super::Tick(DeltaSeconds);
 }
 
+void AChaliceCharacter::Falling()
+{
+	Super::Falling();
+	
+	AbilityComponent->RemoveLooseGameplayTagFully(GroundedTag);
+}
+
+void AChaliceCharacter::Landed(const FHitResult& Hit)
+{
+	Super::Landed(Hit);
+
+	AbilityComponent->AddLooseGameplayTagUnique(GroundedTag);
+}
+
 
 // Ability interfaces
 

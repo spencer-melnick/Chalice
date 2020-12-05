@@ -98,6 +98,26 @@ void UChaliceAbilityComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 }
 
 
+// Tag utilities
+
+void UChaliceAbilityComponent::AddLooseGameplayTagUnique(const FGameplayTag& Tag)
+{
+	if (GetTagCount(Tag) == 0)
+	{
+		AddLooseGameplayTag(Tag);
+	}
+}
+
+void UChaliceAbilityComponent::RemoveLooseGameplayTagFully(const FGameplayTag& Tag)
+{
+	const int32 TagCount = GetTagCount(Tag);
+	if (TagCount > 0)
+	{
+		RemoveLooseGameplayTag(Tag, TagCount);
+	}
+}
+
+
 // Input buffering
 
 void UChaliceAbilityComponent::BufferInput(int32 InputID)

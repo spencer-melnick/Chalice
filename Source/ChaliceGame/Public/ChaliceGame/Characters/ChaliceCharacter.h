@@ -3,10 +3,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "ChaliceGame/Characters/InputBindings.h"
+#include "ChaliceAbilities/System/ChaliceAbilityInterface.h"
 #include "GameFramework/Character.h"
 #include "AbilitySystemInterface.h"
-#include "ChaliceAbilities/System/ChaliceAbilityInterface.h"
-#include "ChaliceGame/Characters/InputBindings.h"
+#include "GameplayTags.h"
 #include "ChaliceCharacter.generated.h"
 
 
@@ -62,6 +63,8 @@ public:
 	virtual void BeginPlay() override;
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 	virtual void Tick(float DeltaSeconds) override;
+	virtual void Falling() override;
+	virtual void Landed(const FHitResult& Hit) override;
 
 
 	// Ability interfaces
@@ -95,6 +98,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="BaseCharacter|Abilities")
 	TArray<FStartingAbilityInfo> StartingAbilities;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="BaseCharacter|Abilities")
+	FGameplayTag GroundedTag;
 
 
 protected:
