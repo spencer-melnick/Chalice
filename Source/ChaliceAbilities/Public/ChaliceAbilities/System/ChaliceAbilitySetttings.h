@@ -33,4 +33,7 @@ public:
 
 	UPROPERTY(EditAnywhere, Config)
 	FGameplayTag HitEventTag;
+
+	UPROPERTY(EditAnywhere, Config)
+	FGameplayTag WeaponActivationTag;
 };

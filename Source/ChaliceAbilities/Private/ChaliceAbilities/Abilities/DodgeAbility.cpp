@@ -2,7 +2,6 @@
 
 #include "ChaliceAbilities/Abilities/DodgeAbility.h"
 #include "ChaliceAbilities/Tasks/AT_ApplyRootMotionPositionCurve.h"
-#include "ChaliceAbilities.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 
 
