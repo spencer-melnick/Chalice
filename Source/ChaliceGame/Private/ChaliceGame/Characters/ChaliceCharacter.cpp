@@ -112,6 +112,24 @@ void AChaliceCharacter::MoveRight(float Scale)
 }
 
 
+// Combat controls
+
+bool AChaliceCharacter::TargetRequirementsMet(const FGameplayTagContainer& TargetTags) const
+{
+	return TargetRequirements.RequirementsMet(TargetTags);
+}
+
+bool AChaliceCharacter::InterruptRequirementsMet(const FGameplayTagContainer& TargetTags) const
+{
+	if (InterruptRequirements.IsEmpty())
+	{
+		// Don't allow interrupts if we don't have any requirements, otherwise every hit would be an interrupt!
+		return false;
+	}
+	return InterruptRequirements.RequirementsMet(TargetTags);	
+}
+
+
 // Ability helper functions
 
 void AChaliceCharacter::GrantStartingAbilities()

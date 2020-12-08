@@ -94,6 +94,60 @@ void AWeaponBase::BP_Unequip(EDetachmentRule LocationRule, EDetachmentRule Rotat
 	Unequip(FDetachmentTransformRules(LocationRule, RotationRule, ScaleRule, true));
 }
 
+bool AWeaponBase::TargetRequirementsMet(const FGameplayTagContainer& TargetTags) const
+{
+	const AChaliceCharacter* Character = GetCharacterOwner();
+	if (Character && !Character->TargetRequirementsMet(TargetTags))
+	{
+		return false;
+	}
+	return TargetRequirements.RequirementsMet(TargetTags);
+}
+
+bool AWeaponBase::InterruptRequirementsMet(const FGameplayTagContainer& TargetTags) const
+{
+	const AChaliceCharacter* Character = GetCharacterOwner();
+	if (Character)
+	{
+		const bool bCharacterRequirementsMet = Character->InterruptRequirementsMet(TargetTags);
+		if (InterruptRequirements.IsEmpty())
+		{
+			return bCharacterRequirementsMet;
+		}
+		if (!bCharacterRequirementsMet)
+		{
+			return false;
+		}
+	}
+	return InterruptRequirements.RequirementsMet(TargetTags);
+}
+
+
+// Accessors
+
+FGameplayTagContainer AWeaponBase::GetTags() const
+{
+	FGameplayTagContainer Result;
+	if (CharacterOwner)
+	{
+		const UChaliceAbilityComponent* AbilityComponent = CharacterOwner->GetChaliceAbilityComponent();
+		check(AbilityComponent)
+        AbilityComponent->GetOwnedGameplayTags(Result);
+	}
+	Result.AppendTags(WeaponTags);
+	return Result;
+}
+
+FName AWeaponBase::GetCollisionProfile() const
+{
+	const AChaliceCharacter* Character = GetCharacterOwner();
+	if (!Character || bOverrideCharacterCollisionProfile)
+	{
+		return CollisionProfile.Name;
+	}
+	return Character->WeaponCollisionProfile.Name;
+}
+
 
 // Callbacks
 

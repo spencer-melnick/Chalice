@@ -7,7 +7,9 @@
 #include "ChaliceAbilities/System/ChaliceAbilityInterface.h"
 #include "GameFramework/Character.h"
 #include "AbilitySystemInterface.h"
+#include "Abilities/GameplayAbilityTypes.h"
 #include "GameplayTags.h"
+#include "Engine/CollisionProfile.h"
 #include "ChaliceCharacter.generated.h"
 
 
@@ -88,6 +90,15 @@ public:
 	void MoveRight(float Scale);
 
 
+	// Combat functions
+
+	UFUNCTION(BlueprintCallable, Category="BaseCharacter|Combat")
+	virtual bool TargetRequirementsMet(const FGameplayTagContainer& TargetTags) const;
+
+	UFUNCTION(BlueprintCallable, Category="BaseCharacter|Combat")
+	virtual bool InterruptRequirementsMet(const FGameplayTagContainer& TargetTags) const;
+
+
 	// Component accessors
 
 	USpringArmComponent* GetSpringArmComponent() const { return SpringArmComponent; }
@@ -101,6 +112,18 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="BaseCharacter|Abilities")
 	FGameplayTag GroundedTag;
+
+	// Only trigger weapon hit events for targets with all of the following tags
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="BaseCharacter|Combat")
+	FGameplayTagRequirements TargetRequirements;
+
+	// If any object hit during a weapon trace meets these requirements, ignore all other collisions (useful for shields)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="BaseCharacter|Combat")
+	FGameplayTagRequirements InterruptRequirements;
+
+	// Default collision profile to use for weapons. Can be optional overridden by individual weapons
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="BaseCharacter|Combat")
+	FCollisionProfileName WeaponCollisionProfile;
 
 
 protected:

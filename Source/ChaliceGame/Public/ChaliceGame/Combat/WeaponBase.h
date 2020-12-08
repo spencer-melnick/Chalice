@@ -3,6 +3,9 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameplayTagContainer.h"
+#include "Engine/CollisionProfile.h"
+#include "Abilities/GameplayAbilityTypes.h"
 #include "WeaponBase.generated.h"
 
 
@@ -45,6 +48,14 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category="Weapon", meta=(DisplayName="Unequip"))
 	void BP_Unequip(EDetachmentRule LocationRule, EDetachmentRule RotationRule, EDetachmentRule ScaleRule);
+
+	UFUNCTION(BlueprintCallable, Category="Weapon")
+	virtual bool TargetRequirementsMet(const FGameplayTagContainer& TargetTags) const;
+
+	UFUNCTION(BlueprintCallable, Category="Weapon")
+	virtual bool InterruptRequirementsMet(const FGameplayTagContainer& TargetTags) const;
+
+	
 	
 
 	// Accessors
@@ -54,6 +65,13 @@ public:
 	UWeaponTraceComponent* GetTraceComponent() const { return TraceComponent; }
 	bool IsWeaponActive() const { return bWeaponActive; }
 
+	// Returns all the weapon tags, plus any character owned tags (if this weapon is equipped by a character)
+	UFUNCTION(BlueprintCallable, Category="Weapon")
+    FGameplayTagContainer GetTags() const;
+
+	UFUNCTION(BlueprintCallable, Category="Weapon")
+	FName GetCollisionProfile() const;
+	
 
 	// Component name constants
 
@@ -66,6 +84,26 @@ public:
 	// Abilities granted to a character when this weapon is equipped
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Weapon")
 	TArray<TSubclassOf<UChaliceAbility>> Abilities;
+
+	// Tags added to weapon hit events in addition to owning character tags
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Weapon")
+	FGameplayTagContainer WeaponTags;
+
+	// Weapon specific target requirements
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Weapon")
+	FGameplayTagRequirements TargetRequirements;
+
+	// Weapon specific interrupt requirements
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Weapon")
+	FGameplayTagRequirements InterruptRequirements;
+
+	// If this is true, use this weapon's collision profile instead of the character's collision profile.
+	// Note: if this weapon isn't owned by a character, this settings won't do anything
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Weapon")
+	bool bOverrideCharacterCollisionProfile = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Weapon")
+	FCollisionProfileName CollisionProfile;
 
 
 protected:

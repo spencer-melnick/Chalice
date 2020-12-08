@@ -12,6 +12,7 @@
 // Forward declarations
 
 class AChaliceCharacter;
+class AWeaponBase;
 class USphereComponent;
 
 
@@ -23,11 +24,9 @@ struct FWeaponTraceShape
 {
 	GENERATED_BODY()
 
+	// Tags added to any events involving this shape
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FName Socket;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FGameplayTagContainer Tags;
+	FGameplayTagContainer ShapeTags;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float Radius = 10.f;
@@ -35,12 +34,13 @@ struct FWeaponTraceShape
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FVector Location;
 
+	// World location last updated during weapon trace
 	UPROPERTY(BlueprintReadOnly)
-	FVector LastPosition;
+	FVector CurrentTraceLocation;
 
-#ifdef CHALICE_DEBUG
-	FVector PreviousPosition;
-#endif
+	// World location used as start of trace
+	UPROPERTY(BlueprintReadOnly)
+	FVector PreviousTraceLocation;
 };
 
 
@@ -80,34 +80,45 @@ public:
 
 	// Accessors
 
+	AWeaponBase* GetWeaponActor() const;
 	AChaliceCharacter* GetWeaponOwner() const;
 	bool IsTraceEnabled() const { return bTraceEnabled; }
+	
+	// Returns tags owned by this trace component, in addition to weapon owned tags
+	UFUNCTION(BlueprintCallable, Category="Weapon")
+    FGameplayTagContainer GetTags() const;
+
+	UFUNCTION(BlueprintCallable, Category="Weapon")
+	FName GetCollisionProfile() const;
 
 
 	// Editor properties
 
+	// Tags added to this weapon trace
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Weapon")
-	FGameplayTagContainer WeaponTags;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Weapon")
-	FCollisionProfileName TraceProfile;
+	FGameplayTagContainer TraceTags;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Weapon")
 	TArray<FWeaponTraceShape> TraceShapes;
 
-	// Only trigger hit events for targets with all of the following tags
+	// Requirements added to the weapon target requirements
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Weapon")
 	FGameplayTagRequirements TargetRequirements;
 
-	// If any object hit meets these requirements, ignore all other collisions (useful for shields)
+	// Requirements added to the weapon interrupt requirements
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Weapon")
 	FGameplayTagRequirements InterruptRequirements;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Weapon")
-	FGameplayTag HitEventTag;
+	FGameplayTag InterruptEventTag;
+
+	// If this is true, use this trace component's collision profile instead of the weapon's collision profile.
+	// Note: if this trace component isn't owned by a weapon, this setting does nothing
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Weapon")
+	bool bOverrideWeaponCollisionProfile = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Weapon")
-	FGameplayTag InterruptEventTag;
+	FCollisionProfileName CollisionProfile;
 
 
 	// Trace functions
@@ -117,6 +128,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category="Weapon")
 	FVector GetTraceShapeLocation(const FWeaponTraceShape& TraceShape) const;
+
+	UFUNCTION(BlueprintCallable, Category="Weapon")
+	FGameplayTagContainer GetTraceShapeTags(const FWeaponTraceShape& TraceShape) const;
 
 
 	// Extra debug data
@@ -135,10 +149,10 @@ protected:
 	virtual void TraceWeapon();
 
 	// Checks to see if the object hit during the trace meets target requirements
-	virtual bool MeetsTargetRequirements(const FHitResult& HitResult);
+	virtual bool TargetRequirementsMet(const FHitResult& HitResult) const;
 
 	// Checks to see if the object hit during the trace meets interruption requirements
-	virtual bool MeetsInterruptRequirements(const FHitResult& HitResult);
+	virtual bool InterruptRequirementsMet(const FHitResult& HitResult) const;
 
 
 	// Events
