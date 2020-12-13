@@ -123,8 +123,20 @@ FGameplayEventData UWeaponTraceComponent::CreateEventFromTrace(const FHitResult&
 	FGameplayEventData EventData;
 	EventData.EventTag = EventTag;
 	EventData.Instigator = GetOwner();
-	EventData.Target = HitResult.Actor.Get();
 	EventData.InstigatorTags = GetTraceShapeTags(Shape);
+	EventData.Target = HitResult.Actor.Get();
+
+	// Get target tags if the target has an ability component
+	const IChaliceAbilityInterface* TargetAbilityInterface = Cast<IChaliceAbilityInterface>(EventData.Target);
+	if (TargetAbilityInterface)
+	{
+		const UChaliceAbilityComponent* TargetAbilityComponent = TargetAbilityInterface->GetChaliceAbilityComponent();
+		if (TargetAbilityComponent)
+		{
+			TargetAbilityComponent->GetOwnedGameplayTags(EventData.TargetTags);
+		}
+	}
+	
 	EventData.TargetData.Add(new FGameplayAbilityTargetData_SingleTargetHit(HitResult));
 	return EventData;
 }
