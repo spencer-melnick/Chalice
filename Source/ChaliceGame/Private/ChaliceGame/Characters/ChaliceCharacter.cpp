@@ -44,6 +44,7 @@ void AChaliceCharacter::BeginPlay()
 	{
 		GrantStartingAbilities();
 	}
+	GrantStartingTags();
 }
 
 void AChaliceCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -158,5 +159,18 @@ void AChaliceCharacter::GrantStartingAbilities()
 
 	UE_LOG(LogChaliceGame, Display, TEXT("Granted %s starting abilities"),
 		*GetNameSafe(this))
+}
+
+void AChaliceCharacter::GrantStartingTags()
+{
+	if (bGrantedStartingTags)
+	{
+		UE_LOG(LogChaliceGame, Warning, TEXT("%s failed - %s was already granted starting tags"),
+				ANSI_TO_TCHAR(__FUNCTION__), *GetNameSafe(this))
+		return;
+	}
+
+	bGrantedStartingTags = true;
+	AbilityComponent->AddLooseGameplayTags(StartingTags);
 }
 

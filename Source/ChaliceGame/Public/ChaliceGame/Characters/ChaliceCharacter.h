@@ -107,22 +107,25 @@ public:
 
 	// Editor properties
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="BaseCharacter|Abilities")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Abilities")
 	TArray<FStartingAbilityInfo> StartingAbilities;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="BaseCharacter|Abilities")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Abilities")
+	FGameplayTagContainer StartingTags;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Abilities")
 	FGameplayTag GroundedTag;
 
 	// Only trigger weapon hit events for targets with all of the following tags
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="BaseCharacter|Combat")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Combat")
 	FGameplayTagRequirements TargetRequirements;
 
 	// If any object hit during a weapon trace meets these requirements, ignore all other collisions (useful for shields)
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="BaseCharacter|Combat")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Combat")
 	FGameplayTagRequirements InterruptRequirements;
 
 	// Default collision profile to use for weapons. Can be optional overridden by individual weapons
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="BaseCharacter|Combat")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Combat")
 	FCollisionProfileName WeaponCollisionProfile;
 
 
@@ -134,6 +137,11 @@ protected:
 	 * Grants all abilities in the starting abilities array. Checks to make sure it only happens once
 	 */
 	void GrantStartingAbilities();
+
+	/**
+	 * Grants all default owned tags. Checks to make sure it only happens once
+	 */
+	void GrantStartingTags();
 
 
 private:
@@ -153,5 +161,6 @@ private:
 	// Ability information
 
 	bool bGrantedStartingAbilities = false;
+	bool bGrantedStartingTags = false;
 	
 };
