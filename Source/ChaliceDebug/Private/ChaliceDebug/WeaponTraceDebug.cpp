@@ -47,7 +47,7 @@ void FWeaponTraceDebug::DrawDebugInfo(UWeaponTraceComponent* TraceComponent, AHU
 
 		if (bTraceEnabled)
 		{
-			DrawDebugLine(HUD->GetWorld(), TraceShape.PreviousPosition, TraceLocation, FColor::Red, false, 0.3f, 0, 1.f);
+			DrawDebugLine(HUD->GetWorld(), TraceShape.PreviousTraceLocation, TraceLocation, FColor::Red, false, 0.3f, 0, 1.f);
 		}
 	}
 }

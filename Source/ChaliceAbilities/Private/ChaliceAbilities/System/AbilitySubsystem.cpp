@@ -17,7 +17,6 @@ void UAbilitySubsystem::Initialize(FSubsystemCollectionBase& Collection)
 
 void UAbilitySubsystem::Deinitialize()
 {
-	UE_LOG(LogChaliceAbilities, Display, TEXT("Saving configuration values"))
-	SaveConfig();
+	
 }
 

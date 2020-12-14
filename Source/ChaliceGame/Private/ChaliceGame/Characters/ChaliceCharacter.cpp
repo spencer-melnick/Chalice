@@ -44,6 +44,7 @@ void AChaliceCharacter::BeginPlay()
 	{
 		GrantStartingAbilities();
 	}
+	GrantStartingTags();
 }
 
 void AChaliceCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -67,6 +68,20 @@ void AChaliceCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 void AChaliceCharacter::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
+}
+
+void AChaliceCharacter::Falling()
+{
+	Super::Falling();
+	
+	AbilityComponent->RemoveLooseGameplayTagFully(GroundedTag);
+}
+
+void AChaliceCharacter::Landed(const FHitResult& Hit)
+{
+	Super::Landed(Hit);
+
+	AbilityComponent->AddLooseGameplayTagUnique(GroundedTag);
 }
 
 
@@ -98,6 +113,20 @@ void AChaliceCharacter::MoveRight(float Scale)
 }
 
 
+// Combat controls
+
+bool AChaliceCharacter::TargetRequirementsMet(const FGameplayTagContainer& TargetTags) const
+{
+	return TargetRequirements.IsEmpty() ? true : TargetRequirements.Matches(TargetTags);
+}
+
+bool AChaliceCharacter::InterruptRequirementsMet(const FGameplayTagContainer& TargetTags) const
+{
+	// If the interrupt requirements are empty, default to not matching
+	return InterruptRequirements.IsEmpty() ? false : InterruptRequirements.Matches(TargetTags);	
+}
+
+
 // Ability helper functions
 
 void AChaliceCharacter::GrantStartingAbilities()
@@ -126,5 +155,18 @@ void AChaliceCharacter::GrantStartingAbilities()
 
 	UE_LOG(LogChaliceGame, Display, TEXT("Granted %s starting abilities"),
 		*GetNameSafe(this))
+}
+
+void AChaliceCharacter::GrantStartingTags()
+{
+	if (bGrantedStartingTags)
+	{
+		UE_LOG(LogChaliceGame, Warning, TEXT("%s failed - %s was already granted starting tags"),
+				ANSI_TO_TCHAR(__FUNCTION__), *GetNameSafe(this))
+		return;
+	}
+
+	bGrantedStartingTags = true;
+	AbilityComponent->AddLooseGameplayTags(StartingTags);
 }
 

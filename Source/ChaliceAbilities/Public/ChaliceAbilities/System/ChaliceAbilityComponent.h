@@ -25,6 +25,17 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 
+	// Tag utilities
+
+	// Adds a loose tag only if it doesn't exactly match any existing gameplay tags on this component
+	UFUNCTION(BlueprintCallable, Category="ChaliceAbilityComponent|Tags")
+	void AddLooseGameplayTagUnique(const FGameplayTag& Tag);
+
+	// Removes all loose gameplay tags that exactly match the given tag
+	UFUNCTION(BlueprintCallable, Category="ChaliceAbilityComponent|Tags")
+	void RemoveLooseGameplayTagFully(const FGameplayTag& Tag);
+	
+	
 	// Input controls
 
 	/**

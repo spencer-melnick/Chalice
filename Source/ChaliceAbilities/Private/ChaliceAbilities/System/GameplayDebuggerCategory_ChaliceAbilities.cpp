@@ -4,8 +4,8 @@
 
 #if WITH_GAMEPLAY_DEBUGGER
 
-#include "ChaliceAbilities/System/AbilitySubsystem.h"
 #include "ChaliceAbilities/System/ChaliceAbilityComponent.h"
+#include "ChaliceAbilities/System/ChaliceAbilitySetttings.h"
 #include "AbilitySystemGlobals.h"
 
 // FGameplayDebuggerCategory_ChaliceAbilities
@@ -21,13 +21,12 @@ FGameplayDebuggerCategory_ChaliceAbilities::FGameplayDebuggerCategory_ChaliceAbi
 
 void FGameplayDebuggerCategory_ChaliceAbilities::CollectData(APlayerController* OwnerPC, AActor* DebugActor)
 {
-	const UAbilitySubsystem* AbilitySubsystem = GEngine->GetEngineSubsystem<UAbilitySubsystem>();
-	if (AbilitySubsystem)
-	{
-		DataPack.bInputBufferEnabled = AbilitySubsystem->bInputBufferEnabled;
-		DataPack.InputBufferTime = AbilitySubsystem->InputBufferTime;
-		DataPack.InputBufferSize = AbilitySubsystem->InputBufferSize;
-	}
+	const UChaliceAbilitySettings* AbilitySettings = UChaliceAbilitySettings::Get();
+
+	DataPack.bInputBufferEnabled = AbilitySettings->bInputBufferEnabled;
+	DataPack.InputBufferTime = AbilitySettings->InputBufferTime;
+	DataPack.InputBufferSize = AbilitySettings->InputBufferSize;
+
 
 	if (!DebugActor)
 	{

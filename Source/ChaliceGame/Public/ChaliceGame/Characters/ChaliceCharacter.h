@@ -3,10 +3,13 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "ChaliceGame/Characters/InputBindings.h"
+#include "ChaliceAbilities/System/ChaliceAbilityInterface.h"
 #include "GameFramework/Character.h"
 #include "AbilitySystemInterface.h"
-#include "ChaliceAbilities/System/ChaliceAbilityInterface.h"
-#include "ChaliceGame/Characters/InputBindings.h"
+#include "Abilities/GameplayAbilityTypes.h"
+#include "GameplayTags.h"
+#include "Engine/CollisionProfile.h"
 #include "ChaliceCharacter.generated.h"
 
 
@@ -62,6 +65,8 @@ public:
 	virtual void BeginPlay() override;
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 	virtual void Tick(float DeltaSeconds) override;
+	virtual void Falling() override;
+	virtual void Landed(const FHitResult& Hit) override;
 
 
 	// Ability interfaces
@@ -85,6 +90,15 @@ public:
 	void MoveRight(float Scale);
 
 
+	// Combat functions
+
+	UFUNCTION(BlueprintCallable, Category="BaseCharacter|Combat")
+	virtual bool TargetRequirementsMet(const FGameplayTagContainer& TargetTags) const;
+
+	UFUNCTION(BlueprintCallable, Category="BaseCharacter|Combat")
+	virtual bool InterruptRequirementsMet(const FGameplayTagContainer& TargetTags) const;
+
+
 	// Component accessors
 
 	USpringArmComponent* GetSpringArmComponent() const { return SpringArmComponent; }
@@ -93,8 +107,26 @@ public:
 
 	// Editor properties
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="BaseCharacter|Abilities")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Abilities")
 	TArray<FStartingAbilityInfo> StartingAbilities;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Abilities")
+	FGameplayTagContainer StartingTags;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Abilities")
+	FGameplayTag GroundedTag;
+
+	// Only trigger weapon hit events for targets with all of the following tags
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Combat")
+	FGameplayTagQuery TargetRequirements;
+
+	// If any object hit during a weapon trace meets these requirements, ignore all other collisions (useful for shields)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Combat")
+	FGameplayTagQuery InterruptRequirements;
+
+	// Default collision profile to use for weapons. Can be optional overridden by individual weapons
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Combat")
+	FCollisionProfileName WeaponCollisionProfile;
 
 
 protected:
@@ -105,6 +137,11 @@ protected:
 	 * Grants all abilities in the starting abilities array. Checks to make sure it only happens once
 	 */
 	void GrantStartingAbilities();
+
+	/**
+	 * Grants all default owned tags. Checks to make sure it only happens once
+	 */
+	void GrantStartingTags();
 
 
 private:
@@ -124,5 +161,6 @@ private:
 	// Ability information
 
 	bool bGrantedStartingAbilities = false;
+	bool bGrantedStartingTags = false;
 	
 };
