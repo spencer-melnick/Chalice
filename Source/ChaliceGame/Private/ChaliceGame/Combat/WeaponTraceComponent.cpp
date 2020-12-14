@@ -145,6 +145,10 @@ void UWeaponTraceComponent::TraceWeapon()
 {
 	TArray<FGameplayEventData> HitEvents;
 	bool bInterrupted = false;
+
+	FCollisionQueryParams QueryParams;
+	QueryParams.AddIgnoredActor(GetWeaponActor());
+	QueryParams.AddIgnoredActor(GetWeaponOwner());
 	
 	for (FWeaponTraceShape& TraceShape : TraceShapes)
 	{
@@ -158,7 +162,7 @@ void UWeaponTraceComponent::TraceWeapon()
 		if (!bInterrupted)
 		{
 			TArray<FHitResult> HitResults;
-			GetWorld()->SweepMultiByProfile(HitResults, OldShapeLocation, NewShapeLocation, FQuat::Identity, UsedCollisionProfile, FCollisionShape::MakeSphere(TraceShape.Radius));
+			GetWorld()->SweepMultiByProfile(HitResults, OldShapeLocation, NewShapeLocation, FQuat::Identity, UsedCollisionProfile, FCollisionShape::MakeSphere(TraceShape.Radius), QueryParams);
 
 			for (const FHitResult& HitResult : HitResults)
 			{
@@ -211,7 +215,7 @@ bool UWeaponTraceComponent::TargetRequirementsMet(const FHitResult& HitResult) c
 	{
 		return false;
 	}
-	return TargetRequirements.RequirementsMet(ActorTags);
+	return TargetRequirements.IsEmpty() ? true : TargetRequirements.Matches(ActorTags);
 }
 
 bool UWeaponTraceComponent::InterruptRequirementsMet(const FHitResult& HitResult) const
@@ -224,19 +228,11 @@ bool UWeaponTraceComponent::InterruptRequirementsMet(const FHitResult& HitResult
 	const FGameplayTagContainer ActorTags = UChaliceAbilitiesBlueprintLibrary::GetActorOwnedTags(Actor);
 	
 	const AWeaponBase* WeaponActor = GetWeaponActor();
-	if (WeaponActor)
+	if (WeaponActor && !WeaponActor->InterruptRequirementsMet(ActorTags))
 	{
-		const bool bWeaponRequirementsMet =  WeaponActor->InterruptRequirementsMet(ActorTags);
-		if (InterruptRequirements.IsEmpty())
-		{
-			return bWeaponRequirementsMet;
-		}
-		if (!bWeaponRequirementsMet)
-		{
-			return false;
-		}
+		return false;
 	}
-	return InterruptRequirements.RequirementsMet(ActorTags);
+	return InterruptRequirements.IsEmpty() ? true : InterruptRequirements.Matches(ActorTags);
 }
 
 

@@ -103,11 +103,11 @@ public:
 
 	// Requirements added to the weapon target requirements
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Weapon")
-	FGameplayTagRequirements TargetRequirements;
+	FGameplayTagQuery TargetRequirements;
 
 	// Requirements added to the weapon interrupt requirements
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Weapon")
-	FGameplayTagRequirements InterruptRequirements;
+	FGameplayTagQuery InterruptRequirements;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Weapon")
 	FGameplayTag InterruptEventTag;

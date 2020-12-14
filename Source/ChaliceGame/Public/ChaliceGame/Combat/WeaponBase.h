@@ -91,11 +91,11 @@ public:
 
 	// Weapon specific target requirements
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Weapon")
-	FGameplayTagRequirements TargetRequirements;
+	FGameplayTagQuery TargetRequirements;
 
 	// Weapon specific interrupt requirements
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Weapon")
-	FGameplayTagRequirements InterruptRequirements;
+	FGameplayTagQuery InterruptRequirements;
 
 	// If this is true, use this weapon's collision profile instead of the character's collision profile.
 	// Note: if this weapon isn't owned by a character, this settings won't do anything

@@ -118,11 +118,11 @@ public:
 
 	// Only trigger weapon hit events for targets with all of the following tags
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Combat")
-	FGameplayTagRequirements TargetRequirements;
+	FGameplayTagQuery TargetRequirements;
 
 	// If any object hit during a weapon trace meets these requirements, ignore all other collisions (useful for shields)
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Combat")
-	FGameplayTagRequirements InterruptRequirements;
+	FGameplayTagQuery InterruptRequirements;
 
 	// Default collision profile to use for weapons. Can be optional overridden by individual weapons
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Combat")

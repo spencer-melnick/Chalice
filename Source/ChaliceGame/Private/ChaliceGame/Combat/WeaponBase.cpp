@@ -101,25 +101,17 @@ bool AWeaponBase::TargetRequirementsMet(const FGameplayTagContainer& TargetTags)
 	{
 		return false;
 	}
-	return TargetRequirements.RequirementsMet(TargetTags);
+	return TargetRequirements.IsEmpty() ? true : TargetRequirements.Matches(TargetTags);
 }
 
 bool AWeaponBase::InterruptRequirementsMet(const FGameplayTagContainer& TargetTags) const
 {
 	const AChaliceCharacter* Character = GetCharacterOwner();
-	if (Character)
+	if (Character && !Character->InterruptRequirementsMet(TargetTags))
 	{
-		const bool bCharacterRequirementsMet = Character->InterruptRequirementsMet(TargetTags);
-		if (InterruptRequirements.IsEmpty())
-		{
-			return bCharacterRequirementsMet;
-		}
-		if (!bCharacterRequirementsMet)
-		{
-			return false;
-		}
+		return false;
 	}
-	return InterruptRequirements.RequirementsMet(TargetTags);
+	return InterruptRequirements.IsEmpty() ? true : InterruptRequirements.Matches(TargetTags);
 }
 
 

@@ -117,17 +117,13 @@ void AChaliceCharacter::MoveRight(float Scale)
 
 bool AChaliceCharacter::TargetRequirementsMet(const FGameplayTagContainer& TargetTags) const
 {
-	return TargetRequirements.RequirementsMet(TargetTags);
+	return TargetRequirements.IsEmpty() ? true : TargetRequirements.Matches(TargetTags);
 }
 
 bool AChaliceCharacter::InterruptRequirementsMet(const FGameplayTagContainer& TargetTags) const
 {
-	if (InterruptRequirements.IsEmpty())
-	{
-		// Don't allow interrupts if we don't have any requirements, otherwise every hit would be an interrupt!
-		return false;
-	}
-	return InterruptRequirements.RequirementsMet(TargetTags);	
+	// If the interrupt requirements are empty, default to not matching
+	return InterruptRequirements.IsEmpty() ? false : InterruptRequirements.Matches(TargetTags);	
 }
 
 
