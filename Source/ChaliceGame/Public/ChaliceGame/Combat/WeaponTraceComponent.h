@@ -3,7 +3,6 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameplayEffectTypes.h"
 #include "Abilities/GameplayAbilityTypes.h"
 #include "Engine/CollisionProfile.h"
 #include "WeaponTraceComponent.generated.h"
@@ -33,6 +32,10 @@ struct FWeaponTraceShape
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FVector Location;
+
+	// If multiple shapes hit the same actor, only the shape with the highest priority will be used in the event
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 Priority;
 
 	// World location last updated during weapon trace
 	UPROPERTY(BlueprintReadOnly)
@@ -76,6 +79,10 @@ public:
 	// Stops weapon tracing
 	UFUNCTION(BlueprintCallable, Category="Weapon")
 	void DisableTrace();
+
+	// Clears the list of hit actors so they can be hit again during this trace cycle
+	UFUNCTION(BlueprintCallable, Category="Weapon")
+	void ClearHitActors();
 
 
 	// Accessors
@@ -142,6 +149,18 @@ public:
 
 protected:
 
+	// Internal struct for tracking hit events
+	struct FHitEvent
+	{
+		FHitEvent(const FHitResult& HitResult, const FWeaponTraceShape& TraceShape)
+			: HitResult(HitResult), TraceShape(TraceShape)
+		{}
+		
+		FHitResult HitResult;
+		FWeaponTraceShape TraceShape;
+	};
+	
+
 	// Trace functions
 
 	void UpdateTraceLocations();
@@ -154,14 +173,17 @@ protected:
 	// Checks to see if the object hit during the trace meets interruption requirements
 	virtual bool InterruptRequirementsMet(const FHitResult& HitResult) const;
 
+	// Sorts the hit events and removes duplicates before dispatching them
+	virtual void FilterHitEvents(TArray<FHitEvent>& HitResults);
+
 
 	// Events
 
-	virtual void OnTraceHit(TArray<FGameplayEventData>& Events);
+	virtual void OnTraceHit(FGameplayEventData Event);
 	virtual void OnTraceInterrupt(FGameplayEventData Event);
 
 	UFUNCTION(BlueprintImplementableEvent, Category="Weapon", meta=(DisplayName="On Trace Hit"))
-	void BP_OnTraceHit(TArray<FGameplayEventData>& Events);
+	void BP_OnTraceHit(FGameplayEventData Event);
 
 	UFUNCTION(BlueprintImplementableEvent, Category="Weapon", meta=(DisplayName="On Trace Interrupt"))
 	void BP_OnTraceInterrupt(FGameplayEventData Event);
@@ -173,5 +195,9 @@ private:
 
 	UPROPERTY(BlueprintReadOnly, Category="Weapon", meta=(AllowPrivateAccess="true"))
 	bool bTraceEnabled = false;
+
+	// Actors hit during this trace cycle
+	UPROPERTY()
+	TArray<AActor*> HitActors;
 	
 };
