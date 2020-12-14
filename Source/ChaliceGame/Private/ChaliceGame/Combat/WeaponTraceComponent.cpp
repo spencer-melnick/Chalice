@@ -41,6 +41,7 @@ void UWeaponTraceComponent::EnableTrace()
 {
 	bTraceEnabled = true;
 	UpdateTraceLocations();
+	ClearHitActors();
 	PrimaryComponentTick.SetTickFunctionEnable(true);
 }
 
@@ -48,6 +49,11 @@ void UWeaponTraceComponent::DisableTrace()
 {
 	bTraceEnabled = false;
 	PrimaryComponentTick.SetTickFunctionEnable(false);
+}
+
+void UWeaponTraceComponent::ClearHitActors()
+{
+	HitActors.Empty();
 }
 
 
@@ -143,7 +149,7 @@ FGameplayEventData UWeaponTraceComponent::CreateEventFromTrace(const FHitResult&
 
 void UWeaponTraceComponent::TraceWeapon()
 {
-	TArray<FGameplayEventData> HitEvents;
+	TArray<FHitEvent> HitEvents;
 	bool bInterrupted = false;
 
 	FCollisionQueryParams QueryParams;
@@ -171,11 +177,11 @@ void UWeaponTraceComponent::TraceWeapon()
 					// Dump all hit events except the one that interrupted our trace
 					bInterrupted = true;
 					HitEvents.Empty(1);
-					HitEvents.Add(CreateEventFromTrace(HitResult, TraceShape, InterruptEventTag));
+					HitEvents.Emplace(HitResult, TraceShape);
 				}
 				else if (TargetRequirementsMet(HitResult))
 				{
-					HitEvents.Add(CreateEventFromTrace(HitResult, TraceShape, UChaliceAbilitySettings::Get()->HitEventTag));
+					HitEvents.Emplace(HitResult, TraceShape);
 				}
 			}
 		}
@@ -184,21 +190,23 @@ void UWeaponTraceComponent::TraceWeapon()
 	if (bInterrupted)
 	{
 		check(HitEvents.Num() == 1);
-		OnTraceInterrupt(HitEvents[0]);
+		OnTraceInterrupt(CreateEventFromTrace(HitEvents[0].HitResult, HitEvents[0].TraceShape, InterruptEventTag));
 	}
 	else
 	{
-		OnTraceHit(HitEvents);
+		FilterHitEvents(HitEvents);
+		for (const auto& HitEvent : HitEvents)
+		{
+			OnTraceHit(CreateEventFromTrace(HitEvent.HitResult, HitEvent.TraceShape, UChaliceAbilitySettings::Get()->HitEventTag));
+		}
 	}
 
-#ifdef CHALICE_DEBUG
+	// Track hit locations for debug
 	LastHitLocations.Empty(HitEvents.Num());
-	
-	for (FGameplayEventData& Event : HitEvents)
+	for (const FHitEvent& HitEvent : HitEvents)
 	{
-		LastHitLocations.Add(Event.TargetData.Get(0)->GetHitResult()->Location);
+		LastHitLocations.Add(HitEvent.HitResult.Location);
 	}
-#endif
 }
 
 bool UWeaponTraceComponent::TargetRequirementsMet(const FHitResult& HitResult) const
@@ -235,19 +243,47 @@ bool UWeaponTraceComponent::InterruptRequirementsMet(const FHitResult& HitResult
 	return InterruptRequirements.IsEmpty() ? true : InterruptRequirements.Matches(ActorTags);
 }
 
+void UWeaponTraceComponent::FilterHitEvents(TArray<FHitEvent>& HitResults)
+{
+	TMap<AActor*, FHitEvent> PriorityMap;
+
+	for (const FHitEvent& CurrentHitEvent : HitResults)
+	{
+		AActor* HitActor = CurrentHitEvent.HitResult.GetActor();
+		if (!HitActor || HitActors.Contains(HitActor))
+		{
+			// Prevent duplicate hits until we clear the hit actor list
+			continue;
+		}
+		
+		const FHitEvent* FoundHitEvent = PriorityMap.Find(HitActor);
+		if (!FoundHitEvent)
+		{
+			PriorityMap.Add(HitActor, CurrentHitEvent);
+		}
+		else if (FoundHitEvent->TraceShape.Priority < CurrentHitEvent.TraceShape.Priority)
+		{
+			PriorityMap[HitActor] = CurrentHitEvent;
+		}
+	}
+
+	HitResults.Empty(PriorityMap.Num());
+	for (const auto& PriorityEvent : PriorityMap)
+	{
+		HitActors.Add(PriorityEvent.Key);
+		HitResults.Add(PriorityEvent.Value);
+	}
+}
+
 
 // Events
 
-void UWeaponTraceComponent::OnTraceHit(TArray<FGameplayEventData>& Events)
+void UWeaponTraceComponent::OnTraceHit(FGameplayEventData Event)
 {
-	AChaliceCharacter* WeaponOwner = GetWeaponOwner();
-	for (FGameplayEventData& Event : Events)
-	{
-		const FGameplayTag HitEventTag = UChaliceAbilitySettings::Get()->HitEventTag;
-		UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(WeaponOwner, HitEventTag, Event);
-		// Why can't the actor be const? >:(
-		UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(const_cast<AActor*>(Event.Target), HitEventTag, Event);
-	}
+	const FGameplayTag HitEventTag = UChaliceAbilitySettings::Get()->HitEventTag;
+	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(GetWeaponOwner(), HitEventTag, Event);
+	// Why can't the actor be const? >:(
+	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(const_cast<AActor*>(Event.Target), HitEventTag, Event);
 }
 
 void UWeaponTraceComponent::OnTraceInterrupt(FGameplayEventData Event)
