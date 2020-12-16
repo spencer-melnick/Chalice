@@ -41,6 +41,8 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Attack")
 	FName MontageSection;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Attack")
+	TSubclassOf<UGameplayEffect> HitEffect;
 
 protected:
 
@@ -58,4 +60,9 @@ protected:
 	UFUNCTION(BlueprintImplementableEvent, meta=(DisplayName="On Animation End"))
     void BP_OnAnimationEnd();
 
+
+	// Helpers
+
+	void ApplyHitEffect(FGameplayEventData EventData);
+	
 };

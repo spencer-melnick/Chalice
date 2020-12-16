@@ -34,6 +34,12 @@ public:
 	// Removes all loose gameplay tags that exactly match the given tag
 	UFUNCTION(BlueprintCallable, Category="ChaliceAbilityComponent|Tags")
 	void RemoveLooseGameplayTagFully(const FGameplayTag& Tag);
+
+
+	// Effect utilities
+
+	UFUNCTION(BlueprintCallable, Category="ChaliceAbilityComponent|Effect")
+	FGameplayEffectContextHandle MakeEffectContextFromEvent(FGameplayEventData EventData);
 	
 	
 	// Input controls
