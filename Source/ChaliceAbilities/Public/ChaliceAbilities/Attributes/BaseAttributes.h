@@ -55,6 +55,6 @@ protected:
 
 	// Helpers
 
-	void AdjustAttributeForMax(const FGameplayAttribute& Attribute, float OldMax, float NewMax);
+	void AdjustAttributeForMax(const FGameplayAttribute& Attribute, float OldMax, float NewMax) const;
 
 };
