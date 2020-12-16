@@ -118,6 +118,34 @@ void UChaliceAbilityComponent::RemoveLooseGameplayTagFully(const FGameplayTag& T
 }
 
 
+// Effect utilities
+
+FGameplayEffectContextHandle UChaliceAbilityComponent::MakeEffectContextFromEvent(FGameplayEventData EventData)
+{
+	FGameplayEffectContextHandle Context = MakeEffectContext();
+	check(Context.Get())
+
+	if (EventData.Target)
+	{
+		// Ugly const cast here because event target is const for some reason
+		const TArray<TWeakObjectPtr<AActor>> ContextActors = {TWeakObjectPtr<AActor>(const_cast<AActor*>(EventData.Target))};
+		Context.AddActors(ContextActors);
+	}
+
+	for (int32 Index = 0; Index < EventData.TargetData.Num(); Index++)
+	{
+		const FGameplayAbilityTargetData* TargetData = EventData.TargetData.Get(Index);
+		const FHitResult* HitResult = TargetData->GetHitResult();
+		if (HitResult)
+		{
+			Context.AddHitResult(*HitResult);
+		}
+	}
+
+	return Context;
+}
+
+
 // Input buffering
 
 void UChaliceAbilityComponent::BufferInput(int32 InputID)

@@ -5,6 +5,7 @@
 #include "ChaliceGame.h"
 #include "ChaliceAbilities/System/ChaliceAbilityComponent.h"
 #include "ChaliceAbilities/Abilities/ChaliceAbility.h"
+#include "ChaliceAbilities/Attributes/BaseAttributes.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Components/InputComponent.h"
@@ -24,6 +25,9 @@ AChaliceCharacter::AChaliceCharacter()
 	CameraComponent = CreateDefaultSubobject<UCameraComponent>(CameraComponentName);
 	CameraComponent->SetupAttachment(SpringArmComponent);
 	AbilityComponent = CreateDefaultSubobject<UChaliceAbilityComponent>(AbilityComponentName);
+
+	// Create attribute sets
+	BaseAttributes = CreateDefaultSubobject<UBaseAttributes>(BaseAttributesName);
 }
 
 
@@ -32,6 +36,7 @@ AChaliceCharacter::AChaliceCharacter()
 FName AChaliceCharacter::SpringArmComponentName(TEXT("SpringArmComponent"));
 FName AChaliceCharacter::CameraComponentName(TEXT("CameraComponent"));
 FName AChaliceCharacter::AbilityComponentName(TEXT("AbilitySystemComponent"));
+FName AChaliceCharacter::BaseAttributesName(TEXT("BaseAttributes"));
 
 
 // Character overrides
@@ -162,11 +167,30 @@ void AChaliceCharacter::GrantStartingTags()
 	if (bGrantedStartingTags)
 	{
 		UE_LOG(LogChaliceGame, Warning, TEXT("%s failed - %s was already granted starting tags"),
-				ANSI_TO_TCHAR(__FUNCTION__), *GetNameSafe(this))
+			ANSI_TO_TCHAR(__FUNCTION__), *GetNameSafe(this))
 		return;
 	}
 
 	bGrantedStartingTags = true;
 	AbilityComponent->AddLooseGameplayTags(StartingTags);
+}
+
+void AChaliceCharacter::ApplyStartingEffects()
+{
+	if (bAppliedStartingEffects)
+	{
+		UE_LOG(LogChaliceGame, Warning, TEXT("%s failed - %s already had starting effects applied"),
+			ANSI_TO_TCHAR(__FUNCTION__), *GetNameSafe(this))
+		return;
+	}
+
+	bAppliedStartingEffects = true;
+
+	for (TSubclassOf<UGameplayEffect>& EffectClass : StartingEffects)
+	{
+		FGameplayEffectSpecHandle EffectSpec = AbilityComponent->MakeOutgoingSpec(EffectClass, UGameplayEffect::INVALID_LEVEL, FGameplayEffectContextHandle());
+		check(EffectSpec.Data.IsValid())
+		AbilityComponent->ApplyGameplayEffectSpecToSelf(*EffectSpec.Data.Get());
+	}
 }
 

@@ -19,6 +19,7 @@ class USpringArmComponent;
 class UCameraComponent;
 class UChaliceAbilityComponent;
 class UChaliceAbility;
+class UBaseAttributes;
 
 
 /**
@@ -58,6 +59,7 @@ public:
 	static FName SpringArmComponentName;
 	static FName CameraComponentName;
 	static FName AbilityComponentName;
+	static FName BaseAttributesName;
 	
 
 	// Character overrides
@@ -116,6 +118,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Abilities")
 	FGameplayTag GroundedTag;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Abilities")
+	TArray<TSubclassOf<UGameplayEffect>> StartingEffects;
+
 	// Only trigger weapon hit events for targets with all of the following tags
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Combat")
 	FGameplayTagQuery TargetRequirements;
@@ -143,6 +148,8 @@ protected:
 	 */
 	void GrantStartingTags();
 
+	void ApplyStartingEffects();
+
 
 private:
 
@@ -157,10 +164,14 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="BaseCharacter", meta=(AllowPrivateAccess=true))
 	UChaliceAbilityComponent* AbilityComponent;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="BaseCharacter", meta=(AllowPrivateAccess=true))
+	UBaseAttributes* BaseAttributes;
+
 
 	// Ability information
 
 	bool bGrantedStartingAbilities = false;
 	bool bGrantedStartingTags = false;
+	bool bAppliedStartingEffects = false;
 	
 };
