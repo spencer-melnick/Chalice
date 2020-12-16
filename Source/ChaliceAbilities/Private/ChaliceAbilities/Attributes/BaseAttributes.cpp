@@ -41,7 +41,7 @@ void UBaseAttributes::PostGameplayEffectExecute(const FGameplayEffectModCallback
 
 // Helpers
 
-void UBaseAttributes::AdjustAttributeForMax(const FGameplayAttribute& Attribute, float OldMax, float NewMax)
+void UBaseAttributes::AdjustAttributeForMax(const FGameplayAttribute& Attribute, float OldMax, float NewMax) const
 {
 	UAbilitySystemComponent* AbilityComponent = GetOwningAbilitySystemComponent();
 	if (FMath::IsNearlyEqual(OldMax, NewMax) || !AbilityComponent)
