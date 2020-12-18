@@ -24,6 +24,9 @@ public:
 
 	virtual FVector GetInteractionLocation() const = 0;
 	virtual void Interact(AActor* InteractionInstigator) = 0;
+	virtual bool CanInteract(AActor* InteractionInstigator) const { return true; }
+	virtual void OnTargeted(AActor* InteractionInstigator) { }
+	virtual void OnUntargeted(AActor* InteractionInstigator) { }
 };
 
 
