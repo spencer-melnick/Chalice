@@ -13,4 +13,10 @@ public:
 	virtual void StartupModule() override;
 	virtual void ShutdownModule() override;
 
+private:
+	template <typename ComponentClass, typename VisualizerClass>
+	void RegisterVisualizer();
+	
+	TArray<FName> ComponentVisualizerNames;
+
 };

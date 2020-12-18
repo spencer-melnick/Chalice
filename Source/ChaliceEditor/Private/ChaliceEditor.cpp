@@ -2,7 +2,9 @@
 
 #include "ChaliceEditor.h"
 #include "ComponentVisualizers/WeaponTraceVisualizer.h"
+#include "ComponentVisualizers/InteractionComponentVisualizer.h"
 #include "ChaliceGame/Combat/WeaponTraceComponent.h"
+#include "ChaliceGame/Characters/InteractionComponent.h"
 #include "Modules/ModuleManager.h"
 #include "UnrealEd.h"
 
@@ -15,9 +17,8 @@ void FChaliceEditorModule::StartupModule()
 
 	if (GUnrealEd)
 	{
-		TSharedPtr<FWeaponTraceVisualizer> WeaponTraceVisualizer = MakeShareable(new FWeaponTraceVisualizer());
-		GUnrealEd->RegisterComponentVisualizer(UWeaponTraceComponent::StaticClass()->GetFName(), WeaponTraceVisualizer);
-		WeaponTraceVisualizer->OnRegister();
+		RegisterVisualizer<UWeaponTraceComponent, FWeaponTraceVisualizer>();
+		RegisterVisualizer<UInteractionComponent, FInteractionComponentVisualizer>();
 	}
 }
 
@@ -27,6 +28,21 @@ void FChaliceEditorModule::ShutdownModule()
 
 	if (GUnrealEd)
 	{
-		GUnrealEd->UnregisterComponentVisualizer(UWeaponTraceComponent::StaticClass()->GetFName());
+		for (const FName& ComponentName : ComponentVisualizerNames)
+		{
+			GUnrealEd->UnregisterComponentVisualizer(ComponentName);
+		}
 	}
 }
+
+
+template <typename ComponentClass, typename VisualizerClass>
+void FChaliceEditorModule::RegisterVisualizer()
+{
+	TSharedPtr<VisualizerClass> Visualizer = MakeShareable(new VisualizerClass());
+	const FName ComponentName = ComponentClass::StaticClass()->GetFName();
+	GUnrealEd->RegisterComponentVisualizer(ComponentName, Visualizer);
+	Visualizer->OnRegister();
+	ComponentVisualizerNames.Add(ComponentName);
+}
+
