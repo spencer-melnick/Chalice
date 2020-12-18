@@ -17,6 +17,7 @@
 
 class USpringArmComponent;
 class UCameraComponent;
+class UInteractionComponent;
 class UChaliceAbilityComponent;
 class UChaliceAbility;
 class UBaseAttributes;
@@ -58,6 +59,7 @@ public:
 
 	static FName SpringArmComponentName;
 	static FName CameraComponentName;
+	static FName InteractionComponentName;
 	static FName AbilityComponentName;
 	static FName BaseAttributesName;
 	
@@ -105,6 +107,7 @@ public:
 
 	USpringArmComponent* GetSpringArmComponent() const { return SpringArmComponent; }
 	UCameraComponent* GetCameraComponent() const { return CameraComponent; }
+	UInteractionComponent* GetInteractionComponent() const { return InteractionComponent; }
 
 
 	// Editor properties
@@ -160,6 +163,9 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="BaseCharacter", meta=(AllowPrivateAccess=true))
 	UCameraComponent* CameraComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="BaseCharacter", meta=(AllowPrivateAccess=true))
+	UInteractionComponent* InteractionComponent;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="BaseCharacter", meta=(AllowPrivateAccess=true))
 	UChaliceAbilityComponent* AbilityComponent;

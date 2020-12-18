@@ -13,6 +13,11 @@ UInteractionComponent::UInteractionComponent()
 	// Enable ticking
 	PrimaryComponentTick.bCanEverTick = true;
 	PrimaryComponentTick.bStartWithTickEnabled = true;
+
+	// Set defaults
+	MaxInteractionDistance = 100.f;
+	InteractionConeAngle = 90.f;
+	bUseControllerRotation = true;
 }
 
 
@@ -133,7 +138,8 @@ TOptional<float> UInteractionComponent::CalculateTargetDistance(FVector TargetLo
 
 	const float Distance = FMath::Sqrt(DistanceSquared);
 	const FVector TargetDirection = TargetOffset / Distance;
-	if (FVector::DotProduct(TargetDirection, GetForwardVector()) > FMath::Cos(FMath::DegreesToRadians(InteractionConeAngle)))
+	const float TargetAngle = FMath::RadiansToDegrees(FMath::Acos(FVector::DotProduct(TargetDirection, GetForwardVector())));
+	if (TargetAngle > InteractionConeAngle)
 	{
 		return TOptional<float>();
 	}

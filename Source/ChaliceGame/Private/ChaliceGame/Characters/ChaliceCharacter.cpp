@@ -2,6 +2,7 @@
 
 #include "ChaliceGame/Characters/ChaliceCharacter.h"
 #include "ChaliceGame/Characters/InputBindings.h"
+#include "ChaliceGame/Characters/InteractionComponent.h"
 #include "ChaliceGame.h"
 #include "ChaliceAbilities/System/ChaliceAbilityComponent.h"
 #include "ChaliceAbilities/Abilities/ChaliceAbility.h"
@@ -24,6 +25,8 @@ AChaliceCharacter::AChaliceCharacter()
 	SpringArmComponent->SetupAttachment(RootComponent);
 	CameraComponent = CreateDefaultSubobject<UCameraComponent>(CameraComponentName);
 	CameraComponent->SetupAttachment(SpringArmComponent);
+	InteractionComponent = CreateDefaultSubobject<UInteractionComponent>(InteractionComponentName);
+	InteractionComponent->SetupAttachment(RootComponent);
 	AbilityComponent = CreateDefaultSubobject<UChaliceAbilityComponent>(AbilityComponentName);
 
 	// Create attribute sets
@@ -35,6 +38,7 @@ AChaliceCharacter::AChaliceCharacter()
 
 FName AChaliceCharacter::SpringArmComponentName(TEXT("SpringArmComponent"));
 FName AChaliceCharacter::CameraComponentName(TEXT("CameraComponent"));
+FName AChaliceCharacter::InteractionComponentName(TEXT("InteractionComponent"));
 FName AChaliceCharacter::AbilityComponentName(TEXT("AbilitySystemComponent"));
 FName AChaliceCharacter::BaseAttributesName(TEXT("BaseAttributes"));
 
