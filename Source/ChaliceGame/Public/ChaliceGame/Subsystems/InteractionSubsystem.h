@@ -23,7 +23,7 @@ class CHALICEGAME_API IInteractiveActor
 public:
 
 	virtual FVector GetInteractionLocation() const = 0;
-	virtual void Interact(AActor* Instigator) = 0;
+	virtual void Interact(AActor* InteractionInstigator) = 0;
 };
 
 

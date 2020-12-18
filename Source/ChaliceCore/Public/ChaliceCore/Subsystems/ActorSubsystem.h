@@ -22,6 +22,7 @@ public:
 	
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 	virtual void Deinitialize() override;
+	virtual bool DoesSupportWorldType(EWorldType::Type WorldType) const override;
 
 
 	// Actor subsystem interface
@@ -45,6 +46,7 @@ private:
 
 	// Callbacks
 
+	virtual void WorldBeginPlay();
 	virtual void ActorSpawned(AActor* Actor);
 
 	UFUNCTION()
@@ -56,6 +58,8 @@ private:
 	UPROPERTY()
 	TArray<AActor*> Actors;
 
+	bool bWorldBeganPlay = false;
+	FDelegateHandle WorldBeginPlayDelegateHandle;
 	FOnActorSpawned::FDelegate ActorSpawnedDelegate;
 	FDelegateHandle ActorSpawnedDelegateHandle;
 	
