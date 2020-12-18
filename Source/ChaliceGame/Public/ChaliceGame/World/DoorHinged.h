@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2020 [insert name here]
+﻿// Copyright (c) 2020 Stephen Melnick
 
 #pragma once
 

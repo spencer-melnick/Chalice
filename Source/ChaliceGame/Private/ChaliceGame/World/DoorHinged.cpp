@@ -1,4 +1,6 @@
-﻿#include "ChaliceGame/World/DoorHinged.h"
+﻿// Copyright (c) 2020 Stephen Melnick
+
+#include "ChaliceGame/World/DoorHinged.h"
 
 ADoorHinged::ADoorHinged()
 {
