@@ -7,9 +7,14 @@
 #include "InteractionComponent.generated.h"
 
 
+// Forward declarations
+
+class UInteractiveComponent;
+
+
 // Delegate declarations
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnInteractDelegate, AActor*, InteractiveActor);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnInteractDelegate, UInteractiveComponent*, InteractiveComponent);
 
 
 /**
@@ -42,7 +47,7 @@ public:
 	// Accessors
 
 	UFUNCTION(BlueprintCallable)
-	AActor* GetTargetedActor() const { return TargetedActor; }
+	UInteractiveComponent* GetTargetedComponent() const { return TargetedComponent; }
 
 
 	// Delegates
@@ -78,7 +83,7 @@ protected:
 	 * Sets the current targeted actor, broadcasting delegates as necessary
 	 * @param NewTarget - New targeted actor, can also be the same as the current targeted actor, or nullptr
 	 */
-	void SetTarget(AActor* NewTarget);
+	void SetTarget(UInteractiveComponent* NewTarget);
 
 	/**
 	 * Checks if the target location is within the cone of this interaction component
@@ -90,6 +95,6 @@ protected:
 private:
 
 	UPROPERTY()
-	AActor* TargetedActor;
+	UInteractiveComponent* TargetedComponent;
 	
 };

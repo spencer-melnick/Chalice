@@ -3,45 +3,51 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "ChaliceCore/Subsystems/ActorSubsystem.h"
+#include "Subsystems/WorldSubsystem.h"
 #include "InteractionSubsystem.generated.h"
 
 
-/**
- * Interface for actors that can be interacted with by the players, such as doors, switches, item pickups, etc.
- */
-UINTERFACE()
-class CHALICEGAME_API UInteractiveActor : public UInterface
-{
-	GENERATED_BODY()
-};
+// Forward declarations
 
-class CHALICEGAME_API IInteractiveActor
-{
-	GENERATED_BODY()
-
-public:
-
-	virtual FVector GetInteractionLocation() const = 0;
-	virtual void Interact(AActor* InteractionInstigator) = 0;
-	virtual bool CanInteract(AActor* InteractionInstigator) const { return true; }
-	virtual void OnTargeted(AActor* InteractionInstigator) { }
-	virtual void OnUntargeted(AActor* InteractionInstigator) { }
-};
+class UInteractiveComponent;
 
 
 /**
- * Simple actor subsystem that tracks all interactive actors
+ * Simple subsystem that tracks all interactive components
  */
 UCLASS()
-class CHALICEGAME_API UInteractionSubsystem : public UActorSubsystem
+class CHALICEGAME_API UInteractionSubsystem : public UWorldSubsystem
 {
 	GENERATED_BODY()
 
+	friend UInteractiveComponent;
+
 public:
 
-	// Actor subsystem overrides
+	// World subsystem overrides
 
-	virtual UClass* GetInterfaceType() const override { return UInteractiveActor::StaticClass(); }
+	virtual bool DoesSupportWorldType(EWorldType::Type WorldType) const override;
+
+
+	// Accessors
+
+	static UInteractionSubsystem* Get(const UObject* WorldContextObject);
+
+	UFUNCTION(BlueprintCallable)
+	const TArray<UInteractiveComponent*>& GetInteractiveComponents() const { return InteractiveComponents; }
+
+
+protected:
+
+	// Tracking controls
+
+	void RegisterInteractiveComponent(UInteractiveComponent* InteractiveComponent);
+	void UnregisterInteractiveComponent(UInteractiveComponent* InteractiveComponent);
+
+
+private:
+
+	UPROPERTY()
+	TArray<UInteractiveComponent*> InteractiveComponents;
 	
 };

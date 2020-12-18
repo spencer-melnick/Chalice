@@ -2,7 +2,7 @@
 
 #include "ChaliceGame/Characters/InteractionComponent.h"
 #include "ChaliceGame/Subsystems/InteractionSubsystem.h"
-#include "ChaliceGame.h"
+#include "ChaliceGame/World/InteractiveComponent.h"
 #include "GameFramework/Character.h"
 
 
@@ -44,33 +44,31 @@ void UInteractionComponent::TickComponent(float DeltaTime, ELevelTick TickType, 
 	}
 
 	// Track the closest actor by distance squared
-	AActor* NearestActor = nullptr;
+	UInteractiveComponent* NearestComponent = nullptr;
 	float ShortestDistanceSquared = -1.f;
 	
-	for (AActor* PotentialTarget : InteractionSubsystem->GetActors())
+	for (UInteractiveComponent* PotentialTarget : InteractionSubsystem->GetInteractiveComponents())
 	{
-		IInteractiveActor* InteractionInterface = Cast<IInteractiveActor>(PotentialTarget);
-		check(InteractionInterface)
-		if (!InteractionInterface->CanInteract(GetOwner()))
+		if (!PotentialTarget->CanInteract(GetOwner()))
 		{
 			continue;
 		}
 
-		TOptional<float> TargetDistance = CalculateTargetDistance(InteractionInterface->GetInteractionLocation());
+		TOptional<float> TargetDistance = CalculateTargetDistance(PotentialTarget->GetInteractionLocation());
 		if (!TargetDistance.IsSet())
 		{
 			continue;
 		}
 
-		if (!NearestActor || TargetDistance.GetValue() < ShortestDistanceSquared)
+		if (!NearestComponent || TargetDistance.GetValue() < ShortestDistanceSquared)
 		{
-			NearestActor = PotentialTarget;
+			NearestComponent = PotentialTarget;
 			ShortestDistanceSquared = TargetDistance.GetValue();
 		}
 	}
 
 	// Let SetTarget() handle nullptr, or no target change
-	SetTarget(NearestActor);
+	SetTarget(NearestComponent);
 }
 
 
@@ -78,51 +76,39 @@ void UInteractionComponent::TickComponent(float DeltaTime, ELevelTick TickType, 
 
 void UInteractionComponent::TryInteract()
 {
-	if (!TargetedActor)
+	if (!TargetedComponent)
 	{
 		return;
 	}
 
-	IInteractiveActor* InteractionInterface = Cast<IInteractiveActor>(TargetedActor);
-	if (!InteractionInterface)
-	{
-		UE_LOG(LogChaliceGame, Warning, TEXT("%s failed on %s - target %s is not an interactive actor"),
-			ANSI_TO_TCHAR(__FUNCTION__), *GetNameSafe(this), *GetNameSafe(TargetedActor))
-		return;
-	}
-
-	InteractionInterface->Interact(GetOwner());
-	OnInteract.Broadcast(TargetedActor);
+	TargetedComponent->Interact(GetOwner());
+	OnInteract.Broadcast(TargetedComponent);
 }
 
 
 // Helpers
 
-void UInteractionComponent::SetTarget(AActor* NewTarget)
+void UInteractionComponent::SetTarget(UInteractiveComponent* NewTarget)
 {
-	if (NewTarget == TargetedActor)
+	if (NewTarget == TargetedComponent)
 	{
 		return;
 	}
 
-	if (TargetedActor)
+	if (TargetedComponent)
 	{
-		// Target changed and the old target wasn't null - notify that we untargeted an actor
-		IInteractiveActor* InteractionInterface = Cast<IInteractiveActor>(TargetedActor);
-		check(InteractionInterface)
-		InteractionInterface->OnUntargeted(GetOwner());
-		OnUntarget.Broadcast(TargetedActor);
+		// Target changed and the old target wasn't null - notify that we untargeted a component
+		TargetedComponent->Untargeted(GetOwner());
+		OnUntarget.Broadcast(TargetedComponent);
 	}
 
-	TargetedActor = NewTarget;
+	TargetedComponent = NewTarget;
 
-	if (TargetedActor)
+	if (TargetedComponent)
 	{
-		// Target changed and the new target isn't null - notify that we targeted an actor
-		IInteractiveActor* InteractionInterface = Cast<IInteractiveActor>(TargetedActor);
-		check(InteractionInterface)
-		InteractionInterface->OnTargeted(GetOwner());
-		OnTarget.Broadcast(TargetedActor);
+		// Target changed and the new target isn't null - notify that we targeted a component
+		TargetedComponent->Targeted(GetOwner());
+		OnTarget.Broadcast(TargetedComponent);
 	}
 }
 
