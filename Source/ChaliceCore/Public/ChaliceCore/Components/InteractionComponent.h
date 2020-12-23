@@ -21,7 +21,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnInteractDelegate, UInteractiveCom
  * Simple component that scans the nearby area for interactive objects within a cone
  */
 UCLASS()
-class CHALICEGAME_API UInteractionComponent : public USceneComponent
+class CHALICECORE_API UInteractionComponent : public USceneComponent
 {
 	GENERATED_BODY()
 

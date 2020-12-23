@@ -1,8 +1,8 @@
 ﻿// Copyright (c) 2020 Spencer Melnick
 
-#include "ChaliceGame/Characters/InteractionComponent.h"
-#include "ChaliceGame/Subsystems/InteractionSubsystem.h"
-#include "ChaliceGame/World/InteractiveComponent.h"
+#include "ChaliceCore/Components/InteractionComponent.h"
+#include "ChaliceCore/Components/InteractiveComponent.h"
+#include "ChaliceCore/Subsystems/InteractionSubsystem.h"
 #include "GameFramework/Character.h"
 
 

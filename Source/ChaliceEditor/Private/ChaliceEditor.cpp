@@ -3,8 +3,8 @@
 #include "ChaliceEditor.h"
 #include "ComponentVisualizers/WeaponTraceVisualizer.h"
 #include "ComponentVisualizers/InteractionComponentVisualizer.h"
+#include "ChaliceCore/Components/InteractionComponent.h"
 #include "ChaliceGame/Combat/WeaponTraceComponent.h"
-#include "ChaliceGame/Characters/InteractionComponent.h"
 #include "Modules/ModuleManager.h"
 #include "UnrealEd.h"
 

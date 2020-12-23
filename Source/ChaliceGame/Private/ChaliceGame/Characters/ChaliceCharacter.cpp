@@ -2,8 +2,8 @@
 
 #include "ChaliceGame/Characters/ChaliceCharacter.h"
 #include "ChaliceGame/Characters/InputBindings.h"
-#include "ChaliceGame/Characters/InteractionComponent.h"
 #include "ChaliceGame.h"
+#include "ChaliceCore/Components/InteractionComponent.h"
 #include "ChaliceAbilities/System/ChaliceAbilityComponent.h"
 #include "ChaliceAbilities/Abilities/ChaliceAbility.h"
 #include "ChaliceAbilities/Attributes/BaseAttributes.h"

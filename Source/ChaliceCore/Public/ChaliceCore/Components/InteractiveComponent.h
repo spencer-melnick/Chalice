@@ -16,7 +16,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FInteractiveComponentDelegate, AActo
  * Component that represents an interactive point in the world, such as a door, switch, item pickup, etc.
  */
 UCLASS(Category="Chalice|World", meta=(BlueprintSpawnableComponent))
-class CHALICEGAME_API UInteractiveComponent : public USceneComponent
+class CHALICECORE_API UInteractiveComponent : public USceneComponent
 {
 	GENERATED_BODY()
 

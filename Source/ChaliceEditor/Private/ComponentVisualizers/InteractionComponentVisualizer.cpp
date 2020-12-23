@@ -1,7 +1,7 @@
 ﻿// Copyright (c) 2020 Spencer Melnick
 
 #include "ComponentVisualizers/InteractionComponentVisualizer.h"
-#include "ChaliceGame/Characters/InteractionComponent.h"
+#include "ChaliceCore/Components/InteractionComponent.h"
 
 
 // FInteractionComponentVisualizer

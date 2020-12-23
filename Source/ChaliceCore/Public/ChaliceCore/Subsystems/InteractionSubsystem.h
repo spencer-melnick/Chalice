@@ -16,7 +16,7 @@ class UInteractiveComponent;
  * Simple subsystem that tracks all interactive components
  */
 UCLASS()
-class CHALICEGAME_API UInteractionSubsystem : public UWorldSubsystem
+class CHALICECORE_API UInteractionSubsystem : public UWorldSubsystem
 {
 	GENERATED_BODY()
 

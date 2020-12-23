@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "ChaliceGame/Characters/InputBindings.h"
+#include "ChaliceCore/Interfaces/InteractionInterface.h"
 #include "ChaliceAbilities/System/ChaliceAbilityInterface.h"
 #include "GameFramework/Character.h"
 #include "AbilitySystemInterface.h"
@@ -47,7 +48,8 @@ struct FStartingAbilityInfo
  * Base character for ChaliceGame
  */
 UCLASS()
-class CHALICEGAME_API AChaliceCharacter : public ACharacter, public IAbilitySystemInterface, public IChaliceAbilityInterface
+class CHALICEGAME_API AChaliceCharacter : public ACharacter,
+	public IAbilitySystemInterface, public IChaliceAbilityInterface, public IInteractionInterface
 {
 	GENERATED_BODY()
 
@@ -79,6 +81,11 @@ public:
 	virtual UChaliceAbilityComponent* GetChaliceAbilityComponent() const override { return AbilityComponent; }
 
 
+	// Interaction interface
+
+	virtual UInteractionComponent* GetInteractionComponent() const override { return InteractionComponent; }
+
+
 	// Control functions
 
 	/**
@@ -107,7 +114,6 @@ public:
 
 	USpringArmComponent* GetSpringArmComponent() const { return SpringArmComponent; }
 	UCameraComponent* GetCameraComponent() const { return CameraComponent; }
-	UInteractionComponent* GetInteractionComponent() const { return InteractionComponent; }
 
 
 	// Editor properties
