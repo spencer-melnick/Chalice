@@ -12,9 +12,11 @@ ADoorBase::ADoorBase()
 	Alpha = 0.0f;
 	Speed = 100.0f;
 	State = EDoorState::Closed;
-	SetRootComponent(CreateDefaultSubobject<USceneComponent>(TEXT("Root")));
+	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
 	Origin = CreateDefaultSubobject<USceneComponent>(TEXT("Origin"));
 	Origin->SetupAttachment(RootComponent);
+
+	InterpolationMode = ELerpInterpolationMode::QuatInterp;
 }
 
 void ADoorBase::Open()
@@ -88,12 +90,16 @@ void ADoorBase::Tick(float DeltaSeconds)
 		default:
 			break;
 	}
-	FTransform Result = FTransform();
-	Result.Blend(ClosedTransform, OpenTransform, TransformCurve->GetFloatValue(Alpha));
-	Origin->SetRelativeTransform(Result);
+	float TransformedAlpha = Alpha;
+	if (TransformCurve)
+	{
+		TransformedAlpha = TransformCurve->GetFloatValue(Alpha);
+	}
+	
+	Origin->SetRelativeTransform(UKismetMathLibrary::TLerp(ClosedTransform, OpenTransform, TransformedAlpha, InterpolationMode));
 }
 
-float ADoorBase::GetDelta(float DeltaSeconds)
+float ADoorBase::GetDelta(float DeltaSeconds) const
 {
 	return Speed / 100 * DeltaSeconds;
 }
