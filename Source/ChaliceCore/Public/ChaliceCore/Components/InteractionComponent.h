@@ -15,6 +15,7 @@ class UInteractiveComponent;
 // Delegate declarations
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnInteractDelegate, UInteractiveComponent*, InteractiveComponent);
+DECLARE_DELEGATE_RetVal(bool, FInteractionComponentCanInteractDelegate);
 
 
 /**
@@ -61,23 +62,27 @@ public:
 	UPROPERTY(BlueprintAssignable)
 	FOnInteractDelegate OnUntarget;
 
+	FInteractionComponentCanInteractDelegate CanInteract;
+
 
 	// Editor properties
 
 	UPROPERTY(EditAnywhere, Category="Shape")
-	float MaxInteractionDistance;
+	float MaxInteractionDistance = 100.f;
 
 	// Angle of the cone used for interaction targeting (in degrees)
 	UPROPERTY(EditAnywhere, Category="Shape", meta=(ClampMin="0", ClampMax="180"))
-	float InteractionConeAngle;
+	float InteractionConeAngle = 90.f;
 
 	UPROPERTY(EditAnywhere, Category="Control")
-	bool bUseControllerRotation;
+	bool bUseControllerRotation = true;
 
 	
 protected:
 
 	// Helpers
+
+	void UpdateTarget();
 
 	/**
 	 * Sets the current targeted actor, broadcasting delegates as necessary

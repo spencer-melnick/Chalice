@@ -34,6 +34,35 @@ void UInteractionComponent::TickComponent(float DeltaTime, ELevelTick TickType, 
 		SetWorldRotation(Character->GetControlRotation());
 	}
 
+	UpdateTarget();
+}
+
+
+// Interaction controls
+
+void UInteractionComponent::TryInteract()
+{
+	if (!TargetedComponent)
+	{
+		return;
+	}
+
+	TargetedComponent->Interact(GetOwner());
+	OnInteract.Broadcast(TargetedComponent);
+}
+
+
+// Helpers
+
+void UInteractionComponent::UpdateTarget()
+{
+	if (CanInteract.IsBound() && !CanInteract.Execute())
+	{
+		// Clear target if we can't interact at all
+		SetTarget(nullptr);
+		return;
+	}
+	
 	// Check that the interaction subsystem exists just in case initialization order didn't happen exactly as expected
 	const UWorld* World = GetWorld();
 	check(World);
@@ -71,22 +100,6 @@ void UInteractionComponent::TickComponent(float DeltaTime, ELevelTick TickType, 
 	SetTarget(NearestComponent);
 }
 
-
-// Interaction controls
-
-void UInteractionComponent::TryInteract()
-{
-	if (!TargetedComponent)
-	{
-		return;
-	}
-
-	TargetedComponent->Interact(GetOwner());
-	OnInteract.Broadcast(TargetedComponent);
-}
-
-
-// Helpers
 
 void UInteractionComponent::SetTarget(UInteractiveComponent* NewTarget)
 {

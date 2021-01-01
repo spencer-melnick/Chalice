@@ -110,6 +110,11 @@ public:
 	virtual bool InterruptRequirementsMet(const FGameplayTagContainer& TargetTags) const;
 
 
+	// Callbacks
+
+	bool CanInteract() const;
+
+
 	// Component accessors
 
 	USpringArmComponent* GetSpringArmComponent() const { return SpringArmComponent; }
@@ -129,6 +134,10 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Abilities")
 	TArray<TSubclassOf<UGameplayEffect>> StartingEffects;
+
+	// Interaction is only enabled as long as this character meets these requirements
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Interaction")
+	FGameplayTagQuery InteractionRequirementsSelf;
 
 	// Only trigger weapon hit events for targets with all of the following tags
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Combat")

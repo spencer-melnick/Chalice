@@ -31,6 +31,9 @@ AChaliceCharacter::AChaliceCharacter()
 
 	// Create attribute sets
 	BaseAttributes = CreateDefaultSubobject<UBaseAttributes>(BaseAttributesName);
+
+	// Bind interaction requirements to delegate
+	InteractionComponent->CanInteract.BindUObject(this, &AChaliceCharacter::CanInteract);
 }
 
 
@@ -133,6 +136,21 @@ bool AChaliceCharacter::InterruptRequirementsMet(const FGameplayTagContainer& Ta
 {
 	// If the interrupt requirements are empty, default to not matching
 	return InterruptRequirements.IsEmpty() ? false : InterruptRequirements.Matches(TargetTags);	
+}
+
+
+// Callbacks
+
+bool AChaliceCharacter::CanInteract() const
+{
+	if (InteractionRequirementsSelf.IsEmpty())
+	{
+		return true;
+	}
+
+	FGameplayTagContainer SelfTags;
+	AbilityComponent->GetOwnedGameplayTags(SelfTags);
+	return InteractionRequirementsSelf.Matches(SelfTags);
 }
 
 

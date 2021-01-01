@@ -8,7 +8,7 @@
 
 // Delegate declarations
 
-DECLARE_DYNAMIC_DELEGATE_TwoParams(FCanInteractDelegate, AActor*, InteractionInstigator, bool&, ReturnValue);
+DECLARE_DYNAMIC_DELEGATE_TwoParams(FInteractiveComponentCanInteractDelegate, AActor*, InteractionInstigator, bool&, ReturnValue);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FInteractiveComponentDelegate, AActor*, InteractionInstigator);
 
 
@@ -40,7 +40,7 @@ public:
 	// Delegates
 
 	UPROPERTY(BlueprintReadWrite)
-	FCanInteractDelegate CanInteractDelegate;
+	FInteractiveComponentCanInteractDelegate CanInteractDelegate;
 
 	UPROPERTY(BlueprintAssignable)
 	FInteractiveComponentDelegate OnTargetedDelegate;
