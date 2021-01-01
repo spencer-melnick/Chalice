@@ -3,6 +3,7 @@
 #include "ChaliceGame/Characters/ChaliceCharacter.h"
 #include "ChaliceGame/Characters/InputBindings.h"
 #include "ChaliceGame.h"
+#include "ChaliceCore/Components/InteractionComponent.h"
 #include "ChaliceAbilities/System/ChaliceAbilityComponent.h"
 #include "ChaliceAbilities/Abilities/ChaliceAbility.h"
 #include "ChaliceAbilities/Attributes/BaseAttributes.h"
@@ -24,10 +25,15 @@ AChaliceCharacter::AChaliceCharacter()
 	SpringArmComponent->SetupAttachment(RootComponent);
 	CameraComponent = CreateDefaultSubobject<UCameraComponent>(CameraComponentName);
 	CameraComponent->SetupAttachment(SpringArmComponent);
+	InteractionComponent = CreateDefaultSubobject<UInteractionComponent>(InteractionComponentName);
+	InteractionComponent->SetupAttachment(RootComponent);
 	AbilityComponent = CreateDefaultSubobject<UChaliceAbilityComponent>(AbilityComponentName);
 
 	// Create attribute sets
 	BaseAttributes = CreateDefaultSubobject<UBaseAttributes>(BaseAttributesName);
+
+	// Bind interaction requirements to delegate
+	InteractionComponent->CanInteract.BindUObject(this, &AChaliceCharacter::CanInteract);
 }
 
 
@@ -35,6 +41,7 @@ AChaliceCharacter::AChaliceCharacter()
 
 FName AChaliceCharacter::SpringArmComponentName(TEXT("SpringArmComponent"));
 FName AChaliceCharacter::CameraComponentName(TEXT("CameraComponent"));
+FName AChaliceCharacter::InteractionComponentName(TEXT("InteractionComponent"));
 FName AChaliceCharacter::AbilityComponentName(TEXT("AbilitySystemComponent"));
 FName AChaliceCharacter::BaseAttributesName(TEXT("BaseAttributes"));
 
@@ -132,6 +139,21 @@ bool AChaliceCharacter::InterruptRequirementsMet(const FGameplayTagContainer& Ta
 }
 
 
+// Callbacks
+
+bool AChaliceCharacter::CanInteract() const
+{
+	if (InteractionRequirementsSelf.IsEmpty())
+	{
+		return true;
+	}
+
+	FGameplayTagContainer SelfTags;
+	AbilityComponent->GetOwnedGameplayTags(SelfTags);
+	return InteractionRequirementsSelf.Matches(SelfTags);
+}
+
+
 // Ability helper functions
 
 void AChaliceCharacter::GrantStartingAbilities()
@@ -154,6 +176,11 @@ void AChaliceCharacter::GrantStartingAbilities()
 
 	for (const FStartingAbilityInfo& AbilityInfo : StartingAbilities)
 	{
+		if (!AbilityInfo.AbilityClass)
+		{
+			continue;
+		}
+		
 		AbilityComponent->GiveAbility(FGameplayAbilitySpec(
 			AbilityInfo.AbilityClass, AbilityInfo.AbilityLevel, static_cast<int32>(AbilityInfo.InputBinding)));
 	}

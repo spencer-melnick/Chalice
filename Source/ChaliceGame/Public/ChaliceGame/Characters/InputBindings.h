@@ -13,5 +13,6 @@ enum class EAbilityInputID : uint8
 	PrimaryAttack,
 	SecondaryAttack,
 	Dodge,
-	Jump
+	Jump,
+	Interact
 };

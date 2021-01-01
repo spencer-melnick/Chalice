@@ -5,6 +5,8 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Components/SceneComponent.h"
+#include "Kismet/KismetMathLibrary.h"
+
 
 #include "DoorBase.generated.h"
 
@@ -36,31 +38,44 @@ public:
 	UFUNCTION(BlueprintCallable)
 	virtual void Toggle();
 	virtual void Tick(float DeltaSeconds) override;
-	
-private:
-	
-	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"))
+
+
+	// Editor properties
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float Alpha;
 
 	// Percent changed per second, 100 will close the door in 1 second, etc.
-	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float Speed;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TEnumAsByte<ELerpInterpolationMode::Type> InterpolationMode;
 	
-	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"))
-	EDoorState State;
-	
-	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FTransform OpenTransform;
 	
-	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FTransform ClosedTransform;
 
-	// The origin point for the relative transformations
-	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"))	
-	USceneComponent* Origin;
-
-	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UCurveFloat* TransformCurve;
 
-	float GetDelta(float DeltaSeconds);
+	
+private:
+
+	float GetDelta(float DeltaSeconds) const;
+
+	
+	// Private state
+
+	EDoorState State;
+
+	
+	// Components
+
+	// The origin point for the relative transformations
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))	
+	USceneComponent* Origin;
+
 };

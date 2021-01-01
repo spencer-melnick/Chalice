@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "ChaliceGame/Characters/InputBindings.h"
+#include "ChaliceCore/Interfaces/InteractionInterface.h"
 #include "ChaliceAbilities/System/ChaliceAbilityInterface.h"
 #include "GameFramework/Character.h"
 #include "AbilitySystemInterface.h"
@@ -17,6 +18,7 @@
 
 class USpringArmComponent;
 class UCameraComponent;
+class UInteractionComponent;
 class UChaliceAbilityComponent;
 class UChaliceAbility;
 class UBaseAttributes;
@@ -46,7 +48,8 @@ struct FStartingAbilityInfo
  * Base character for ChaliceGame
  */
 UCLASS()
-class CHALICEGAME_API AChaliceCharacter : public ACharacter, public IAbilitySystemInterface, public IChaliceAbilityInterface
+class CHALICEGAME_API AChaliceCharacter : public ACharacter,
+	public IAbilitySystemInterface, public IChaliceAbilityInterface, public IInteractionInterface
 {
 	GENERATED_BODY()
 
@@ -58,6 +61,7 @@ public:
 
 	static FName SpringArmComponentName;
 	static FName CameraComponentName;
+	static FName InteractionComponentName;
 	static FName AbilityComponentName;
 	static FName BaseAttributesName;
 	
@@ -75,6 +79,11 @@ public:
 
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 	virtual UChaliceAbilityComponent* GetChaliceAbilityComponent() const override { return AbilityComponent; }
+
+
+	// Interaction interface
+
+	virtual UInteractionComponent* GetInteractionComponent() const override { return InteractionComponent; }
 
 
 	// Control functions
@@ -101,6 +110,11 @@ public:
 	virtual bool InterruptRequirementsMet(const FGameplayTagContainer& TargetTags) const;
 
 
+	// Callbacks
+
+	bool CanInteract() const;
+
+
 	// Component accessors
 
 	USpringArmComponent* GetSpringArmComponent() const { return SpringArmComponent; }
@@ -120,6 +134,10 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Abilities")
 	TArray<TSubclassOf<UGameplayEffect>> StartingEffects;
+
+	// Interaction is only enabled as long as this character meets these requirements
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Interaction")
+	FGameplayTagQuery InteractionRequirementsSelf;
 
 	// Only trigger weapon hit events for targets with all of the following tags
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Combat")
@@ -160,6 +178,9 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="BaseCharacter", meta=(AllowPrivateAccess=true))
 	UCameraComponent* CameraComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="BaseCharacter", meta=(AllowPrivateAccess=true))
+	UInteractionComponent* InteractionComponent;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="BaseCharacter", meta=(AllowPrivateAccess=true))
 	UChaliceAbilityComponent* AbilityComponent;

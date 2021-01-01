@@ -10,6 +10,7 @@
 // Forward declarations
 
 class UChaliceAbilityComponent;
+class UInteractionComponent;
 
 
 /**
@@ -27,4 +28,7 @@ public:
 	
 	UFUNCTION(BlueprintPure, Category="ChaliceAbilities")
 	static FGameplayTagContainer GetActorOwnedTags(const AActor* Actor);
+
+	UFUNCTION(BlueprintPure, Category="ChaliceAbilities")
+	static UInteractionComponent* GetInteractionComponent(const AActor* Actor);
 };

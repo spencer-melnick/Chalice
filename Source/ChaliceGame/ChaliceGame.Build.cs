@@ -10,7 +10,8 @@ public class ChaliceGame : ModuleRules
 	
 		PublicDependencyModuleNames.AddRange(new string[] {
             "Core", "CoreUObject", "Engine", "InputCore",
-            "GameplayAbilities", "GameplayTags", "GameplayTasks", "ChaliceAbilities"
+            "GameplayAbilities", "GameplayTags", "GameplayTasks",
+            "ChaliceCore", "ChaliceAbilities"
         });
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
