@@ -176,6 +176,11 @@ void AChaliceCharacter::GrantStartingAbilities()
 
 	for (const FStartingAbilityInfo& AbilityInfo : StartingAbilities)
 	{
+		if (!AbilityInfo.AbilityClass)
+		{
+			continue;
+		}
+		
 		AbilityComponent->GiveAbility(FGameplayAbilitySpec(
 			AbilityInfo.AbilityClass, AbilityInfo.AbilityLevel, static_cast<int32>(AbilityInfo.InputBinding)));
 	}
