@@ -16,5 +16,11 @@ void FInteractionComponentVisualizer::DrawVisualization(const UActorComponent* C
 	
 	DrawWireSphereCappedCone(PDI, ComponentTransform, InteractionComponent->MaxInteractionDistance, InteractionComponent->InteractionConeAngle,
 		32, 8, 10, Color, SDPG_World);
+
+	const float InnerInteractionDistance = InteractionComponent->InnerInteractionDistance;
+	if (!FMath::IsNearlyZero(InnerInteractionDistance))
+	{
+		DrawWireSphere(PDI, ComponentTransform.GetLocation(), Color, InteractionComponent->InnerInteractionDistance, 32, SDPG_World);
+	}
 }
 

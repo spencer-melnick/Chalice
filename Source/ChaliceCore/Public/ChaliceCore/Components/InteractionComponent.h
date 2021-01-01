@@ -67,14 +67,17 @@ public:
 
 	// Editor properties
 
-	UPROPERTY(EditAnywhere, Category="Shape")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Shape")
 	float MaxInteractionDistance = 100.f;
 
-	// Angle of the cone used for interaction targeting (in degrees)
-	UPROPERTY(EditAnywhere, Category="Shape", meta=(ClampMin="0", ClampMax="180"))
-	float InteractionConeAngle = 90.f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Shape")
+	float InnerInteractionDistance = 50.f;
 
-	UPROPERTY(EditAnywhere, Category="Control")
+	// Angle of the cone used for interaction targeting (in degrees)
+	UPROPERTY(EditAnywhere, Category="Shape", meta=(ClampMin="0", ClampMax="90"))
+	float InteractionConeAngle = 45.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Control")
 	bool bUseControllerRotation = true;
 
 	

@@ -72,9 +72,9 @@ void UInteractionComponent::UpdateTarget()
 		return;
 	}
 
-	// Track the closest actor by distance squared
+	// Track the closest actor by distanc
 	UInteractiveComponent* NearestComponent = nullptr;
-	float ShortestDistanceSquared = -1.f;
+	float ShortestDistance = -1.f;
 	
 	for (UInteractiveComponent* PotentialTarget : InteractionSubsystem->GetInteractiveComponents())
 	{
@@ -89,10 +89,10 @@ void UInteractionComponent::UpdateTarget()
 			continue;
 		}
 
-		if (!NearestComponent || TargetDistance.GetValue() < ShortestDistanceSquared)
+		if (!NearestComponent || TargetDistance.GetValue() < ShortestDistance)
 		{
 			NearestComponent = PotentialTarget;
-			ShortestDistanceSquared = TargetDistance.GetValue();
+			ShortestDistance = TargetDistance.GetValue();
 		}
 	}
 
@@ -136,11 +136,16 @@ TOptional<float> UInteractionComponent::CalculateTargetDistance(FVector TargetLo
 	}
 
 	const float Distance = FMath::Sqrt(DistanceSquared);
-	const FVector TargetDirection = TargetOffset / Distance;
-	const float TargetAngle = FMath::RadiansToDegrees(FMath::Acos(FVector::DotProduct(TargetDirection, GetForwardVector())));
-	if (TargetAngle > InteractionConeAngle)
+
+	if (Distance > (InnerInteractionDistance * InnerInteractionDistance))
 	{
-		return TOptional<float>();
+		// Compute angle if the target is outside of the inner sphere radius
+		const FVector TargetDirection = TargetOffset / Distance;
+		const float TargetAngle = FMath::RadiansToDegrees(FMath::Acos(FVector::DotProduct(TargetDirection, GetForwardVector())));
+		if (TargetAngle > InteractionConeAngle)
+		{
+			return TOptional<float>();
+		}
 	}
 
 	return Distance;
