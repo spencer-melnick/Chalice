@@ -12,6 +12,27 @@ AChalicePlayerController::AChalicePlayerController()
 }
 
 
+// Player controller overrides
+
+void AChalicePlayerController::OnPossess(APawn* InPawn)
+{
+	Super::OnPossess(InPawn);
+
+	OnPossessDelegate.Broadcast(InPawn);
+}
+
+void AChalicePlayerController::OnUnPossess()
+{
+	APawn* PreviousPawn = GetPawn();
+	Super::OnUnPossess();
+
+	if (PreviousPawn)
+	{
+		OnUnpossessDelegate.Broadcast(PreviousPawn);
+	}
+}
+
+
 // Ability interface overrides
 
 UAbilitySystemComponent* AChalicePlayerController::GetAbilitySystemComponent() const

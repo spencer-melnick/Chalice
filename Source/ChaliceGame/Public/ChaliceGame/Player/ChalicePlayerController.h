@@ -14,6 +14,11 @@
 class AChaliceCharacter;
 
 
+// Delegates
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FPlayerPossessionDelegate, APawn*, Character);
+
+
 /**
  * Main game specific player controller class
  */
@@ -27,6 +32,12 @@ public:
 	AChalicePlayerController();
 
 
+	// Player controller overrides
+
+	virtual void OnPossess(APawn* InPawn) override;
+	virtual void OnUnPossess() override;
+
+
 	// Ability interface overrides
 
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
@@ -36,5 +47,14 @@ public:
 	// Accessors
 
 	AChaliceCharacter* GetChaliceCharacter() const;
+
+
+	// Delegates
+
+	UPROPERTY(BlueprintAssignable, meta=(DisplayName="On Possess"))
+	FPlayerPossessionDelegate OnPossessDelegate;
+
+	UPROPERTY(BlueprintAssignable, meta=(DisplayName="On Possess"))
+	FPlayerPossessionDelegate OnUnpossessDelegate;
 	
 };
