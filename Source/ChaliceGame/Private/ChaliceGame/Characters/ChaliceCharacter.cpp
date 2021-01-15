@@ -55,6 +55,7 @@ void AChaliceCharacter::BeginPlay()
 	if (HasAuthority())
 	{
 		GrantStartingAbilities();
+		ApplyStartingEffects();
 	}
 	GrantStartingTags();
 }
