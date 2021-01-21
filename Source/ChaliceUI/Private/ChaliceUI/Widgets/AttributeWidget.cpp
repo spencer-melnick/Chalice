@@ -68,5 +68,6 @@ void UAttributeWidget::OnPlayerUnpossessPawn(APawn* Pawn)
 
 void UAttributeWidget::OnAttributeChanged(const FOnAttributeChangeData& ChangeData)
 {
+	OnAttributeChanged_BP(ChangeData.Attribute, ChangeData.OldValue, ChangeData.NewValue);
 	OnAttributeChangedDelegate.Broadcast(ChangeData.Attribute, ChangeData.OldValue, ChangeData.NewValue);
 }

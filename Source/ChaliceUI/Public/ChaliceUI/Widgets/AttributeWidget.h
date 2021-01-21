@@ -57,6 +57,9 @@ protected:
 
 	virtual void OnAttributeChanged(const FOnAttributeChangeData& ChangeData);
 
+	UFUNCTION(BlueprintImplementableEvent, meta=(DisplayName="On Attribute Changed"))
+	void OnAttributeChanged_BP(FGameplayAttribute Attribute, float OldValue, float NewValue);
+
 
 private:
 	
