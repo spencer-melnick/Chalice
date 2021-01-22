@@ -14,3 +14,16 @@ public:
 	virtual void ShutdownModule() override;
 
 };
+
+
+// Widget check macros
+
+#if WITH_EDITOR
+#define CHECK_WIDGETS(X) \
+	if (!(X)) \
+	{ \
+		return; \
+	}
+#else
+#define CHECK_WIDGETS(X)
+#endif

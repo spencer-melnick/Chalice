@@ -12,7 +12,7 @@ public class ChaliceUI : ModuleRules
         {
             "Core", "CoreUObject", "Engine", "InputCore", "DeveloperSettings",
             "GameplayAbilities", "GameplayTags", "GameplayTasks",
-            "UMG",
+            "UMG", "Slate", "SlateCore",
             "ChaliceCore", "ChaliceAbilities", "ChaliceGame"
         });
     }
