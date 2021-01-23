@@ -20,6 +20,11 @@
 			"LoadingPhase": "Default"
 		},
         {
+            "Name": "ChaliceUI",
+            "Type": "ClientOnly",
+            "LoadingPhase": "Default"
+        },
+        {
             "Name": "ChaliceDebug",
             "Type": "DeveloperTool",
             "LoadingPhase": "Default"
